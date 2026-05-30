@@ -31,8 +31,8 @@ Dự án được thiết kế chuẩn mực theo mô hình kiến trúc phân l
 
 ```
 PTPMITSS/
-├── .gitignore                         <-- 
-├── README.md                          <-- 
+├── .gitignore                         
+├── README.md                        
 ├── logitrack-backend/                 <-- BACKEND SPRING BOOT 3.X (JAVA 17)
 │   ├── pom.xml                        <-- Cấu hình Maven dependencies (JPA, Web, PostgreSQL, Lombok)
 │   └── src/main/
@@ -213,4 +213,65 @@ Dưới đây là kịch bản kiểm thử nghiệp vụ chi tiết kèm hướ
   3. **Xác nhận & Phát hành đơn PO:**
      * Khi đã hài lòng với phương án phân bổ, bạn bấm nút **Xác nhận & Sinh đơn PO**.
      * **Kết quả quan sát:** Backend sẽ khởi chạy transaction đồng bộ: Tự động trừ tồn kho đối tác trên database, tạo ra các vận đơn đặt hàng PO gốc ở trạng thái `DANG_GIAO`, chuyển trạng thái yêu cầu đặt hàng sang `DA_XU_LY`. Hệ thống bắn Toast thành công rực rỡ và điều hướng về trang danh sách!
+
+---
+
+## 📊 Danh sách 25 Kịch bản Dữ liệu Kiểm thử Tích hợp (UC006 & UC007)
+
+Hệ thống đã được nạp sẵn bộ dữ liệu mẫu hạt giống khổng lồ gồm **25 kịch bản kiểm thử độc lập** (từ `REQ-2026-005` đến `REQ-2026-029`) được chèn sẵn vào CSDL qua `data.sql` để hai bạn và thầy cô dễ dàng kiểm nghiệm và đánh giá chất lượng phần mềm:
+
+### 1. Nhóm kiểm thử Use Case 6 (Truy vấn thông tin tồn kho và vận chuyển)
+*Các phiếu này mặc định ở trạng thái **`CHO_XU_LY`** (Màu cam - Chờ tiếp nhận) trong danh sách phiếu của bộ phận Đặt hàng.*
+
+#### **A. Kịch bản Truy vấn Thành công (Kho đối tác có hàng):**
+Khi chọn phiếu và click **`Gửi truy vấn`**, hệ thống tìm thấy tồn kho khả dụng $\rightarrow$ Thông báo thành công và chuyển sang **`Đang chờ Site phản hồi`** (xanh dương).
+* **`REQ-2026-005`**: Yêu cầu 10 Laptop MacBook Air (`SKU-LAP-001`) nhận ngày `15/06/2026`. (Tồn kho Seoul 25, LA 40 $\rightarrow$ Khả dụng).
+* **`REQ-2026-006`**: Yêu cầu 20 iPad Air 5 (`SKU-TAB-001`) nhận ngày `20/06/2026`. (Tồn kho Seoul 40, LA 65 $\rightarrow$ Khả dụng).
+* **`REQ-2026-007`**: Yêu cầu 15 Webcam Logitech (`SKU-CAM-001`) nhận ngày `08/06/2026`. (Tồn kho Seoul 70 $\rightarrow$ Khả dụng).
+* **`REQ-2026-008`**: Yêu cầu hỗn hợp: 5 màn hình Dell (`SKU-MON-001`) + 10 bàn phím Logitech (`SKU-KEY-002`) nhận ngày `10/06/2026`.
+* **`REQ-2026-009`**: Yêu cầu 100 cuộn Cáp mạng Cat6 (`SKU-CAB-003`) nhận ngày `05/06/2026`. (Tồn kho Shenzhen 300, Bangkok 400 $\rightarrow$ Khả dụng).
+
+#### **B. Kịch bản Truy vấn Thất bại (Kho đối tác HẾT SẠCH hàng):**
+Khi click **`Gửi truy vấn`**, do không có site đối tác nào có tồn kho của sản phẩm này $\rightarrow$ Hệ thống tự động báo lỗi và chuyển sang trạng thái **`Không thể đáp ứng`** (màu đỏ).
+* **`REQ-2026-010`**: Yêu cầu 5 chiếc Micro Rode (`SKU-MIC-001`) nhận ngày `12/06/2026`. (SKU-MIC-001 được cố ý thiết lập tồn kho = 0 trên toàn cầu để test lỗi).
+* **`REQ-2026-011`**: Yêu cầu hỗn hợp chứa sản phẩm hết hàng: 10 bàn phím Keychron + 2 Micro thu âm Rode (`SKU-MIC-001`) nhận ngày `15/06/2026`.
+* **`REQ-2026-012`**: Yêu cầu 1 chiếc Micro thu âm Rode (`SKU-MIC-001`) nhận ngày `07/06/2026`.
+
+---
+
+### 2. Nhóm kiểm thử Use Case 7 (Phân bổ tối ưu & Tách Site)
+*Các phiếu này đã qua bước truy vấn tồn kho, mặc định ở trạng thái **`DANG_CHO_PHAN_HOI`** (Màu xanh dương) để test ngay chức năng kích hoạt phân bổ.*
+
+#### **A. Kịch bản phân bổ thành công (Đủ hàng & Kịp tiến độ):**
+* **`REQ-2026-013` (Tự động đi Tàu biển giá rẻ):** Yêu cầu 40 Màn Dell (`SKU-MON-001`) nhận ngày `10/06/2026` (Hạn 11 ngày).
+  * *Thuật toán đề xuất:* Shenzhen đi tàu mất 7 ngày <= 11 ngày $\rightarrow$ Đề xuất đi Tàu biển Shenzhen (`ship delivery`).
+* **`REQ-2026-014` (Tự động chuyển sang đi Máy bay vì đi Tàu trễ):** Yêu cầu 30 Tai nghe Sony WH-1000XM5 (`SKU-EAR-001`) nhận ngày `04/06/2026` (Hạn khẩn cấp 5 ngày).
+  * *Thuật toán đề xuất:* Tokyo đi tàu mất 10 ngày (trễ), đi máy bay mất 3 ngày <= 5 ngày $\rightarrow$ Đề xuất Máy bay Tokyo (`air delivery`).
+* **`REQ-2026-015` (Tự chọn đối tác tối ưu có tồn kho lớn nhất):** Yêu cầu 100 Bàn phím Keychron (`SKU-KEY-001`) nhận ngày `06/06/2026` (Hạn 7 ngày).
+  * *Thuật toán đề xuất:* Lọc các Site kịp hạn và gom trọn 100 chiếc tại Shenzhen (tàu 7 ngày).
+* **`REQ-2026-016` (Tự động TÁCH SITE tối thiểu hóa nhà cung cấp):** Yêu cầu 150 Chuột Logitech MX Master 3S (`SKU-MOU-001`) nhận ngày `09/06/2026` (Hạn 10 ngày).
+  * *Thuật toán đề xuất:* Seoul (tàu 5 ngày, tồn 100), Shenzhen (tàu 7 ngày, tồn 80). Sắp xếp tồn kho giảm dần và đề xuất: gom 100 chiếc từ Seoul (ship) và 50 chiếc từ Shenzhen (ship).
+* **`REQ-2026-017` (Phân bổ đi máy bay site xa):** Yêu cầu 30 MacBook Air M2 (`SKU-LAP-001`) nhận ngày `15/06/2026`. Đề xuất Máy bay LA (3 ngày).
+* **`REQ-2026-018` (Tách Site đi Tàu biển):** Yêu cầu 80 máy tính bảng iPad Air 5 (`SKU-TAB-001`) nhận ngày `25/06/2026`. Đề xuất: 65 chiếc từ LA (ship) + 15 chiếc từ Seoul (ship).
+* **`REQ-2026-019` (Chọn Site gần chi phí rẻ nhất):** Yêu cầu 200 Cáp HDMI (`SKU-CAB-001`) nhận ngày `05/06/2026`. Đề xuất: 200 cái tại Bangkok đi tàu (3 ngày).
+
+#### **B. Kịch bản phân bổ thất bại (Lỗi popup đỏ trên UI):**
+* **`REQ-2026-020` (Thất bại do Thiếu hàng diện rộng):** Yêu cầu 300 Màn Dell (`SKU-MON-001`). 
+  * *Kết quả:* Tổng tồn kho toàn cầu chỉ có 160 chiếc $\rightarrow$ Popup đỏ báo lỗi thiếu 140 chiếc.
+* **`REQ-2026-021` (Thất bại do Thiếu hàng cục bộ):** Yêu cầu 200 Tai nghe Marshall Major IV (`SKU-EAR-003`).
+  * *Kết quả:* Tổng tồn kho chỉ có 180 cái $\rightarrow$ Báo lỗi thiếu 20 cái.
+* **`REQ-2026-022` (Thất bại do khẩn cấp - Giao trong ngày):** Yêu cầu 10 chiếc MacBook Air M2 nhận ngày `30/05/2026` (Hôm nay!).
+  * *Kết quả:* Kể cả đi máy bay nhanh nhất cũng mất 1 ngày $\rightarrow$ Báo lỗi trễ hạn cả 2 phương thức.
+* **`REQ-2026-023` (Thất bại do trễ hạn cả 2 phương thức vận chuyển):** Yêu cầu 15 Máy ảnh Sony Alpha (`SKU-CAM-002`) nhận ngày `01/06/2026` (Trong 2 ngày).
+  * *Kết quả:* Tokyo đi máy bay mất 3 ngày, Frankfurt mất 4 ngày $\rightarrow$ Báo lỗi trễ hạn.
+* **`REQ-2026-024` (Thất bại do thiếu hàng ở Site duy nhất):** Yêu cầu 50 chiếc Ghế công thái học (`SKU-CHA-001`).
+  * *Kết quả:* Chỉ có Bangkok có tồn kho 35 cái $\rightarrow$ Báo lỗi thiếu 15 cái.
+
+---
+
+### 3. Nhóm các phiếu trạng thái lịch sử đặc biệt
+* **Đã hoàn tất phân bổ & sinh đơn PO thành công (`DA_XU_LY`):** `REQ-2026-025`, `REQ-2026-026`, `REQ-2026-027` (đã liên kết chặt chẽ với các PO tương ứng trong CSDL).
+* **Không thể đáp ứng lịch sử (`KHONG_THE_DAP_UNG`):** `REQ-2026-028`.
+* **Đã chủ động hủy đơn bởi nhân viên (`DA_HUY`):** `REQ-2026-029`.
+
 
