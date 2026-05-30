@@ -1,0 +1,122 @@
+Source: https://docs.google.com/document/d/16utZwEURWw66uecrpvurKPjsfdFVyruayZg5cYdJq4o/export?format=txt
+---
+```
+để làm nổi bật
+Hỗ trợ cho việc tra cứu lỗi hoặc báo cáo kỹ thuật
+Mô tả chi tiết lỗi (Error Description) Giải thích chi tiết nguyên nhân gây ra lỗi
+Văn bản (Read-only) Dữ liệu động (tùy thuộc vào lỗi trả về) Render nội dung: "Số lượng nhập (Actual Received) không khớp với số lượng yêu cầu (Ordered Qty)
+Mức độ chênh lệch vượt quá giới hạn (threshold)..." Thông báo cần rõ ràng, chỉ đích danh trường dữ liệu nào đang gây lỗi ở màn hình cha
+Hướng dẫn xử lý (Instruction) Gợi ý cho người dùng cách giải quyết vấn đề
+Văn bản (Read-only) N/A Khuyến nghị người dùng: "Vui lòng kiểm tra lại hàng vật lý hoặc tiến hành tạo Report Issue..." Nút "Đóng" Đóng cửa sổ lỗi để quay lại màn hình đối chiếu sửa dữ liệu
+Nút bấm (Button) N/A Kích hoạt hàm closeModal('3_doi_chieu.html')
+Đóng modal, gỡ bỏ lớp phủ làm mờ, trả người dùng về màn hình đối chiếu để họ có thể nhập lại số lượng ở cột "Actual Received Qty"
+Nút thứ cấp (btn-secondary)
+Nút "Tạo Report Issue" Chuyển sang luồng tạo báo cáo sự cố nếu số lượng hàng vật lý thực tế đúng là bị lệch lớn
+Nút bấm (Button) N/A Hiện tại đang gắn tạm hàm closeModal('3_doi_chieu.html').(Thực tế xử lý): Sẽ gọi API hoặc hàm điều hướng để mở một form "Báo cáo sự cố" (Report Issue form) và truyền dữ liệu chênh lệch hiện tại sang form đó
+Nút cảnh báo màu đỏ (btn-danger) vì nó dẫn đến một nghiệp vụ xử lý ngoại lệ (Exception Handling)
+Bảng Đặc tả UI/UX: Modal Thành công (Ghi nhận Nhập kho Thành công) Tên Giải thích Phân loại Tùy chọn/ Giá trị đầu vào Chi tiết xử lý Ghi chú Giao diện Nền (Background Overlay) Lớp nền làm mờ màn hình 3_doi_chieu.html bên dưới, làm nổi bật thông báo thành công
+Lớp phủ (Overlay) N/A Áp dụng hiệu ứng filter: blur(2px) cho khối 
+Chặn mọi thao tác của người dùng với màn hình đối chiếu cũ vì tiến trình này đã hoàn tất
+Thể hiện đúng tính chất màn hình con phụ thuộc khóa luồng (blocking)
+Biểu tượng Thành công Biểu tượng trực quan xác nhận thao tác đã hoàn thành
+Biểu tượng (Icon) N/A Render icon task_alt (Dấu tick hoàn thành)
+Thường được kết hợp với màu xanh lá (success color) theo chuẩn UI/UX
+Tăng tính phản hồi tích cực cho người dùng
+Tiêu đề Modal Xác nhận trạng thái của hành động nghiệp vụ
+Văn bản (Text) "Ghi nhận Nhập kho Thành công" Hiển thị tĩnh ở trung tâm modal
+Nội dung thông báo (Message) Diễn giải chi tiết về kết quả của hệ thống
+Văn bản (Read-only) "Tất cả hàng hoá hiển thị ở trạng thái Matched đã được ghi nhận." Thông báo tĩnh
+Khẳng định với nhân viên kho rằng chỉ những mặt hàng đã khớp số lượng mới được đưa vào hệ thống tồn kho thành công
+Mã giao dịch (Transaction ID) Mã định danh duy nhất cho phiên nhập kho vừa thực hiện
+Văn bản (Read-only) Dữ liệu động: VD TXN-88219-WH Lấy dữ liệu ID do Backend/Database sinh ra và trả về sau khi commit thành công
+Hiển thị trong thẻ 
+Dùng để truy vết (trace) hoặc kiểm toán (audit) trong tương lai
+Thời gian ghi nhận (Timestamp) Dấu thời gian chính xác lúc giao dịch thành công
+Văn bản (Read-only) Dữ liệu động (Thời gian thực) Thẻ sẽ được Javascript gán giá trị thời gian hiện tại của hệ thống (VD: YYYY-MM-DD HH:MM:SS) ngay khi modal được mở
+Nút "Về trang chủ" Hướng điều hướng thứ nhất: Kết thúc luồng và quay về Dashboard
+Nút bấm (Button) N/A Kích hoạt closeModal('1_trang_chu.html')
+Xóa các dữ liệu tạm (session/draft) của đơn hàng hiện tại và chuyển hướng người dùng về trang chủ 1_trang_chu.html
+Nút thứ cấp (btn-secondary)
+Nút "Chuyển sang module Tồn Kho" Hướng điều hướng thứ hai: Chuyển sang module quản lý kho để kiểm tra hàng vừa nhập
+Nút bấm (Button) N/A Kích hoạt sự kiện điều hướng.(Theo mã HTML hiện tại đang gọi closeModal('3_doi_chieu.html') - có thể đây là code tạm)
+Thực tế sẽ cần điều hướng đến trang quản lý tồn kho (VD: inventory_module.html)
+Nút chính (btn-primary), khuyến khích người dùng tiếp tục luồng công việc kiểm tra hàng hóa
+6
+Biểu đồ trình tự cho Subsystem Biểu đồ này tập trung mô tả chi tiết cách NhapKhoController giao tiếp với HeThongQuanLyKho thông qua một lớp giao tiếp (Interface/Boundary)
+7
+Biểu đồ lớp cho Subsystem 8
+Biểu đồ tổng quát (Main Sequence Diagram) Biểu đồ này đóng vai trò như một bộ khung điều hướng
+Khi người dùng bấm lưu, hệ thống sẽ rẽ nhánh và gọi đến các kịch bản chi tiết thông qua toán tử ref 9
+Biểu đồ phân rã 1 - Luồng nhập kho thành công Đây là kịch bản lý tưởng (Luồng chính)
+Dữ liệu được lưu thẳng vào cơ sở dữ liệu và đồng bộ với hệ thống bên ngoài
+10
+Biểu đồ phân rã 2 - Luồng xử lý chênh lệch Biểu đồ này biểu diễn chi tiết luồng 5a trong đặc tả: bôi đỏ dòng lệch, bắt buộc người dùng nhập ghi chú trước khi cho phép lưu
+11
+Biểu đồ phân rã 3 - Luồng xử lý ngoại lệ Kịch bản này bao quát các lỗi Validation cơ bản ở phía UI và Controller (ví dụ: nhập mã đơn không tồn tại, hoặc nhập số lượng là chữ cái/số âm)
+12
+Biểu đồ lớp mức thiết kế (Design Class Diagram) Biểu đồ này bao gồm đầy đủ các lớp thuộc 3 tầng (Boundary, Control, Entity) cùng với các Modal thông báo
+13
+Biểu đồ phụ thuộc gói cá nhân (Package Dependency Diagram) Biểu đồ này giúp thể hiện cấu trúc phân tầng
+Mẫu copy các biểu đồ 1
+Biểu đồ giao tiếp (Community diagram) 1
+Use case “Quản lý danh mục mặt hàng” (UC001) 2
+Use case “Tạo yêu cầu nhập hàng” (UC002) 3
+Use case “Theo dõi trạng thái yêu cầu” (UC003) 4
+Use case “Quản lý Site” (UC004) 5
+Use case “Tiếp nhận yêu cầu đơn hàng” (UC005) 6
+Use case “Truy vấn thông tin tồn kho và vận chuyển” (UC006) 7
+Use case “Xử lý yêu cầu và Tách đơn hàng” (UC007) 8
+Use case “Gửi đơn hàng” (UC008) 9
+Use case “Quản lý mặt hàng kinh doanh” (UC009) 10
+Use case “Cập nhật thông tin vận chuyển” (UC010) 11
+Use case “Xác nhận tồn kho” (UC011) 12
+Use case “Tiếp nhận và Xác nhận đơn hàng” (UC012) 13
+Use case “Xem danh sách đơn hàng” (UC013) 14
+Use case “Đối chiếu và Ghi nhận nhập kho” (UC014)
+```
+```
+
+Dùng để truy vết (trace) hoặc kiểm toán (audit) trong tương lai
+Thời gian ghi nhận (Timestamp) Dấu thời gian chính xác lúc giao dịch thành công
+Văn bản (Read-only) Dữ liệu động (Thời gian thực) Thẻ sẽ được Javascript gán giá trị thời gian hiện tại của hệ thống (VD: YYYY-MM-DD HH:MM:SS) ngay khi modal được mở
+Nút "Về trang chủ" Hướng điều hướng thứ nhất: Kết thúc luồng và quay về Dashboard
+Nút bấm (Button) N/A Kích hoạt closeModal('1_trang_chu.html')
+Xóa các dữ liệu tạm (session/draft) của đơn hàng hiện tại và chuyển hướng người dùng về trang chủ 1_trang_chu.html
+Nút thứ cấp (btn-secondary)
+Nút "Chuyển sang module Tồn Kho" Hướng điều hướng thứ hai: Chuyển sang module quản lý kho để kiểm tra hàng vừa nhập
+Nút bấm (Button) N/A Kích hoạt sự kiện điều hướng.(Theo mã HTML hiện tại đang gọi closeModal('3_doi_chieu.html') - có thể đây là code tạm)
+Thực tế sẽ cần điều hướng đến trang quản lý tồn kho (VD: inventory_module.html)
+Nút chính (btn-primary), khuyến khích người dùng tiếp tục luồng công việc kiểm tra hàng hóa
+6
+Biểu đồ trình tự cho Subsystem Biểu đồ này tập trung mô tả chi tiết cách NhapKhoController giao tiếp với HeThongQuanLyKho thông qua một lớp giao tiếp (Interface/Boundary)
+7
+Biểu đồ lớp cho Subsystem 8
+Biểu đồ tổng quát (Main Sequence Diagram) Biểu đồ này đóng vai trò như một bộ khung điều hướng
+Khi người dùng bấm lưu, hệ thống sẽ rẽ nhánh và gọi đến các kịch bản chi tiết thông qua toán tử ref 9
+Biểu đồ phân rã 1 - Luồng nhập kho thành công Đây là kịch bản lý tưởng (Luồng chính)
+Dữ liệu được lưu thẳng vào cơ sở dữ liệu và đồng bộ với hệ thống bên ngoài
+10
+Biểu đồ phân rã 2 - Luồng xử lý chênh lệch Biểu đồ này biểu diễn chi tiết luồng 5a trong đặc tả: bôi đỏ dòng lệch, bắt buộc người dùng nhập ghi chú trước khi cho phép lưu
+11
+Biểu đồ phân rã 3 - Luồng xử lý ngoại lệ Kịch bản này bao quát các lỗi Validation cơ bản ở phía UI và Controller (ví dụ: nhập mã đơn không tồn tại, hoặc nhập số lượng là chữ cái/số âm)
+12
+Biểu đồ lớp mức thiết kế (Design Class Diagram) Biểu đồ này bao gồm đầy đủ các lớp thuộc 3 tầng (Boundary, Control, Entity) cùng với các Modal thông báo
+13
+Biểu đồ phụ thuộc gói cá nhân (Package Dependency Diagram) Biểu đồ này giúp thể hiện cấu trúc phân tầng
+Mẫu copy các biểu đồ 1
+Biểu đồ giao tiếp (Community diagram) 1
+Use case “Quản lý danh mục mặt hàng” (UC001) 2
+Use case “Tạo yêu cầu nhập hàng” (UC002) 3
+Use case “Theo dõi trạng thái yêu cầu” (UC003) 4
+Use case “Quản lý Site” (UC004) 5
+Use case “Tiếp nhận yêu cầu đơn hàng” (UC005) 6
+Use case “Truy vấn thông tin tồn kho và vận chuyển” (UC006) 7
+Use case “Xử lý yêu cầu và Tách đơn hàng” (UC007) 8
+Use case “Gửi đơn hàng” (UC008) 9
+Use case “Quản lý mặt hàng kinh doanh” (UC009) 10
+Use case “Cập nhật thông tin vận chuyển” (UC010) 11
+Use case “Xác nhận tồn kho” (UC011) 12
+Use case “Tiếp nhận và Xác nhận đơn hàng” (UC012) 13
+Use case “Xem danh sách đơn hàng” (UC013) 14
+Use case “Đối chiếu và Ghi nhận nhập kho” (UC014)
+```

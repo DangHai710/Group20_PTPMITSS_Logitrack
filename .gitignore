@@ -1,0 +1,54 @@
+# ==========================================
+# 1. Spring Boot Backend (.gitignore)
+# ==========================================
+logitrack-backend/target/
+!logitrack-backend/.mvn/wrapper/maven-wrapper.jar
+logitrack-backend/.mvn/
+logitrack-backend/bin/
+logitrack-backend/.settings/
+logitrack-backend/.project
+logitrack-backend/.classpath
+logitrack-backend/*.iml
+logitrack-backend/*.ipr
+logitrack-backend/*.iws
+logitrack-backend/.idea/
+
+# Database files
+logitrack-backend/*.db
+logitrack-backend/*.log
+
+# ==========================================
+# 2. Next.js Frontend (.gitignore)
+# ==========================================
+logitrack-frontend/node_modules/
+logitrack-frontend/.next/
+logitrack-frontend/out/
+logitrack-frontend/build/
+
+# IDE configs
+logitrack-frontend/.idea/
+logitrack-frontend/.vscode/
+logitrack-frontend/*.suo
+logitrack-frontend/*.ntvs*
+logitrack-frontend/*.njsproj
+logitrack-frontend/*.sln
+logitrack-frontend/*.sw?
+
+# Environment variables
+logitrack-frontend/.env
+logitrack-frontend/.env.local
+logitrack-frontend/.env.development.local
+logitrack-frontend/.env.test.local
+logitrack-frontend/.env.production.local
+
+# Debug logs
+logitrack-frontend/npm-debug.log*
+logitrack-frontend/yarn-debug.log*
+logitrack-frontend/yarn-error.log*
+logitrack-frontend/pnpm-debug.log*
+logitrack-frontend/lerna-debug.log*
+
+# OS specific files
+.DS_Store
+Thumbs.db
+desktop.ini
