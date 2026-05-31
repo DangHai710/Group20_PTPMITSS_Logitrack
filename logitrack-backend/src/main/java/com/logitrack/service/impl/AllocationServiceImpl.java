@@ -56,15 +56,15 @@ public class AllocationServiceImpl implements AllocationService {
         LocalDate currentDate = LocalDate.of(2026, 5, 30);
 
         for (ChiTietYeuCau item : chiTietList) {
-            String maHang = item.getMathHang().getMaHang();
-            String tenHang = item.getMathHang().getTenHang();
+            String maHang = item.getMatHang().getMaHang();
+            String tenHang = item.getMatHang().getTenHang();
             int soLuongYeuCau = item.getSoLuong();
             LocalDate ngayNhanMongMuon = item.getNgayNhanMongMuon();
 
             log.debug("Đang xử lý mặt hàng: {} | Số lượng cần: {} | Ngày cần: {}", maHang, soLuongYeuCau, ngayNhanMongMuon);
 
             // 1. Lấy tồn kho đối tác cho mặt hàng này
-            List<ThongTinKho> thongTinKhoList = thongTinKhoRepository.findByMathHangMaHang(maHang);
+            List<ThongTinKho> thongTinKhoList = thongTinKhoRepository.findByMatHangMaHang(maHang);
 
             // 2. Lọc Site khả dụng cho dropdown thủ công (BP BP Đặt hàng quốc tế chọn)
             List<AllocationDetailDTO.FeasibleSiteDTO> feasibleSites = new ArrayList<>();
@@ -222,14 +222,14 @@ public class AllocationServiceImpl implements AllocationService {
                     continue;
                 }
 
-                MathHang mathHang = MathHang.builder().maHang(d.getMaHang()).build();
+                MatHang matHang = MatHang.builder().maHang(d.getMaHang()).build();
 
                 // 2. Tạo ChiTietDonDatHang
                 ChiTietDonDatHang detailEntity = ChiTietDonDatHang.builder()
                         .donDatHang(donDatHang)
-                        .mathHang(mathHang)
+                        .matHang(matHang)
                         .soLuongDat(d.getSoLuongPhanBo())
-                        .donViTinh("Chiếc") // Mặc định hoặc lấy từ MathHang
+                        .donViTinh("Chiếc") // Mặc định hoặc lấy từ MatHang
                         .build();
 
                 chiTietDonDatHangRepository.save(detailEntity);

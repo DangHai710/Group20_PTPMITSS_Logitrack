@@ -8,5 +8,5 @@ import lombok.*;
 @AllArgsConstructor
 public class ThongTinKhoId implements Serializable {
     private String importSite; // Tên thuộc tính trong ThongTinKho đại diện cho maSite
-    private String mathHang;   // Tên thuộc tính trong ThongTinKho đại diện cho maHang
+    private String matHang;   // Tên thuộc tính trong ThongTinKho đại diện cho maHang
 }

@@ -117,7 +117,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
         </svg>
       ),
-      roles: ['INVENTORY'],
+      roles: ['SALES', 'ORDER', 'INVENTORY'],
     },
   ];
 
@@ -218,7 +218,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <span className={isActive ? 'text-blue-600' : 'text-slate-400'}>
                   {item.icon}
                 </span>
-                {item.title}
+                {item.path === '/dashboard/receipts'
+                  ? (role === 'INVENTORY' ? 'Danh sách PO đến kho' : 'Theo dõi đơn hàng PO')
+                  : item.title}
               </Link>
             );
           })}

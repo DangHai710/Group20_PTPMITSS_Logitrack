@@ -6,10 +6,9 @@ import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/Table';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
+import { Badge, getStatusBadge } from '@/components/ui/Badge';
 import { Select } from '@/components/ui/Select';
 import { Textarea } from '@/components/ui/Textarea';
-import { Badge, getStatusBadge } from '@/components/ui/Badge';
 import { useToast } from '@/components/ui/Toast';
 import apiService from '@/services/api';
 
@@ -34,8 +33,10 @@ export default function POReceiptAdjustment() {
   const [ghiChuChenhLech, setGhiChuChenhLech] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [role, setRole] = useState<string | null>(null);
 
   useEffect(() => {
+    setRole(localStorage.getItem('userRole'));
     async function loadPODetails() {
       try {
         const data = await apiService.getPODetails(id);
@@ -154,8 +155,14 @@ export default function POReceiptAdjustment() {
           </svg>
         </Button>
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-slate-800">Đối soát kiểm nhận nhập kho</h2>
-          <p className="text-sm text-slate-500 mt-1">Đếm số lượng thực tế nhận được tại cửa kho và đối chiếu với vận đơn gốc.</p>
+          <h2 className="text-xl font-bold tracking-tight text-slate-800">
+            {role === 'INVENTORY' ? 'Đối soát kiểm nhận nhập kho' : 'Chi tiết Đơn đặt hàng PO'}
+          </h2>
+          <p className="text-sm text-slate-500 mt-1">
+            {role === 'INVENTORY'
+              ? 'Đếm số lượng thực tế nhận được tại cửa kho và đối chiếu với vận đơn gốc.'
+              : 'Thông tin mặt hàng đặt, tồn kho đối tác và trạng thái vận chuyển PO ngoại nhập.'}
+          </p>
         </div>
       </div>
 
@@ -194,9 +201,13 @@ export default function POReceiptAdjustment() {
       {/* 2. Main interactive check table */}
       <Card className="border-slate-200/50 shadow-lg">
         <CardHeader>
-          <CardTitle className="text-base font-bold text-slate-800">Bảng nhập liệu đối soát hàng hóa thực tế</CardTitle>
+          <CardTitle className="text-base font-bold text-slate-800">
+            {role === 'INVENTORY' ? 'Bảng nhập liệu đối soát hàng hóa thực tế' : 'Chi tiết danh sách hàng hóa đặt nhập khẩu'}
+          </CardTitle>
           <CardDescription>
-            Nhân viên kho điền số lượng đếm được thực tế và chọn kết luận dòng hàng. Giá trị mặc định là khớp 100%.
+            {role === 'INVENTORY'
+              ? 'Nhân viên kho điền số lượng đếm được thực tế và chọn kết luận dòng hàng. Giá trị mặc định là khớp 100%.'
+              : 'Chi tiết danh sách sản phẩm, số lượng đặt hàng từ Site cung cấp ngoại nhập.'}
           </CardDescription>
         </CardHeader>
         <CardContent className="px-0 pb-0">
@@ -226,7 +237,7 @@ export default function POReceiptAdjustment() {
                         type="number"
                         min={0}
                         value={line.soLuongThucNhan}
-                        disabled={poHeader.trangThaiPo !== 'DANG_GIAO'}
+                        disabled={role !== 'INVENTORY' || poHeader.trangThaiPo !== 'DANG_GIAO'}
                         onChange={(e) => handleUpdateLine(index, 'soLuongThucNhan', e.target.value)}
                         className="w-24 text-center bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 px-3 py-1.5 rounded-lg text-sm text-slate-800 font-bold focus:outline-none focus:bg-white transition-all"
                       />
@@ -238,7 +249,7 @@ export default function POReceiptAdjustment() {
                         id={`check-${line.maHang}`}
                         options={checkResultOptions}
                         value={line.ketQuaKiemNhan}
-                        disabled={poHeader.trangThaiPo !== 'DANG_GIAO'}
+                        disabled={role !== 'INVENTORY' || poHeader.trangThaiPo !== 'DANG_GIAO'}
                         onChange={(e) => handleUpdateLine(index, 'ketQuaKiemNhan', e.target.value)}
                         className="py-1.5 text-xs font-semibold rounded-lg bg-slate-50 border border-slate-200"
                       />
@@ -256,15 +267,15 @@ export default function POReceiptAdjustment() {
             <div className="p-6 border-t border-slate-100 space-y-4">
               <Textarea
                 id="notes"
-                label="Ghi chú chênh lệch (Giải trình chi tiết nếu có chênh lệch/lỗi hàng)"
+                label={role === 'INVENTORY' ? "Ghi chú chênh lệch (Giải trình chi tiết nếu có chênh lệch/lỗi hàng)" : "Ghi chú chênh lệch giải trình"}
                 placeholder="Giải trình lý do thiếu hụt số lượng, hàng lỗi hỏng hoặc rách bao bì khi nhận hàng..."
                 value={ghiChuChenhLech}
-                disabled={poHeader.trangThaiPo !== 'DANG_GIAO'}
+                disabled={role !== 'INVENTORY' || poHeader.trangThaiPo !== 'DANG_GIAO'}
                 onChange={(e) => setGhiChuChenhLech(e.target.value)}
               />
 
               {/* Crucial help box for rollback testing */}
-              {poHeader.trangThaiPo === 'DANG_GIAO' && (
+              {poHeader.trangThaiPo === 'DANG_GIAO' && role === 'INVENTORY' && (
                 <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl text-xs text-amber-800 leading-relaxed font-semibold">
                   💡 <span className="text-amber-900 uppercase font-extrabold mr-1">Để kiểm thử cơ chế Transaction Rollback (Dương):</span> 
                   Hãy viết từ khóa <span className="bg-amber-100 px-1.5 py-0.5 rounded text-amber-900 border border-amber-200 font-mono">sập mạng</span> hoặc 
@@ -275,7 +286,7 @@ export default function POReceiptAdjustment() {
             </div>
 
             {/* Submit Action Footer */}
-            {poHeader.trangThaiPo === 'DANG_GIAO' && (
+            {poHeader.trangThaiPo === 'DANG_GIAO' && role === 'INVENTORY' && (
               <div className="p-6 border-t border-slate-100 flex justify-end gap-3 bg-slate-50/50 rounded-b-2xl">
                 <Button type="button" variant="outline" onClick={() => router.push('/dashboard/receipts')} className="font-semibold">
                   Hủy bỏ
@@ -287,6 +298,14 @@ export default function POReceiptAdjustment() {
                   className="bg-indigo-950 hover:bg-slate-900 px-8 font-bold shadow-lg shadow-slate-950/20"
                 >
                   Xác nhận nhập kho
+                </Button>
+              </div>
+            )}
+
+            {!(poHeader.trangThaiPo === 'DANG_GIAO' && role === 'INVENTORY') && (
+              <div className="p-6 border-t border-slate-100 flex justify-end bg-slate-50/50 rounded-b-2xl">
+                <Button type="button" variant="outline" onClick={() => router.push('/dashboard/receipts')} className="font-semibold px-6">
+                  Quay lại danh sách
                 </Button>
               </div>
             )}

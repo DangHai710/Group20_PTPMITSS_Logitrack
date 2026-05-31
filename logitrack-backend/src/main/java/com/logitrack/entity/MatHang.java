@@ -4,12 +4,12 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "math_hang")
+@Table(name = "mat_hang")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MathHang {
+public class MatHang {
     @Id
     @Column(name = "ma_hang", length = 100)
     private String maHang; // SKU

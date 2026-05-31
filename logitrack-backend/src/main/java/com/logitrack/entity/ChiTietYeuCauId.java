@@ -8,5 +8,5 @@ import lombok.*;
 @AllArgsConstructor
 public class ChiTietYeuCauId implements Serializable {
     private String yeuCauDatHang; // Tên thuộc tính trong ChiTietYeuCau đại diện cho maYc
-    private String mathHang;       // Tên thuộc tính trong ChiTietYeuCau đại diện cho maHang
+    private String matHang;       // Tên thuộc tính trong ChiTietYeuCau đại diện cho maHang
 }

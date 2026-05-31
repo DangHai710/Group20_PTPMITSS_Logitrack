@@ -10,25 +10,25 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Badge } from '@/components/ui/Badge';
 import { useToast } from '@/components/ui/Toast';
-import { MathHang } from '@/types';
+import { MatHang } from '@/types';
 import apiService from '@/services/api';
 
 export default function ItemCatalog() {
-  const [items, setItems] = useState<MathHang[]>([]);
+  const [items, setItems] = useState<MatHang[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { toast } = useToast();
 
   // Edit / Delete states
-  const [editingItem, setEditingItem] = useState<MathHang | null>(null);
+  const [editingItem, setEditingItem] = useState<MatHang | null>(null);
   const [editName, setEditName] = useState('');
   const [editUnit, setEditUnit] = useState<'Chiếc' | 'Hộp' | 'Bộ' | 'Khay' | 'Kg'>('Chiếc');
   const [editCategory, setEditCategory] = useState('');
   const [editQuyCach, setEditQuyCach] = useState('');
   const [editTrangThai, setEditTrangThai] = useState<'Đang kinh doanh' | 'Ngừng kinh doanh'>('Đang kinh doanh');
   
-  const [deletingItem, setDeletingItem] = useState<MathHang | null>(null);
+  const [deletingItem, setDeletingItem] = useState<MatHang | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
   // Pagination states
@@ -54,7 +54,7 @@ export default function ItemCatalog() {
     setCurrentPage(1);
   }, [searchTerm]);
 
-  const handleEditClick = (item: MathHang) => {
+  const handleEditClick = (item: MatHang) => {
     setEditingItem(item);
     setEditName(item.tenHang);
     setEditUnit((item.donViTinh as any) || 'Chiếc');
@@ -80,6 +80,7 @@ export default function ItemCatalog() {
         quyCach: editQuyCach.trim(),
         trangThai: editTrangThai
       });
+
       setItems(items.map(it => it.maHang === editingItem.maHang ? updated : it));
       toast('Cập nhật mặt hàng thành công!', 'success');
       setEditingItem(null);

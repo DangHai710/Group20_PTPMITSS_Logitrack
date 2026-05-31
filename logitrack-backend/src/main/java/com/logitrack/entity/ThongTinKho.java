@@ -19,7 +19,7 @@ public class ThongTinKho {
     @Id
     @ManyToOne
     @JoinColumn(name = "ma_hang", nullable = false)
-    private MathHang mathHang;
+    private MatHang matHang;
 
     @Column(name = "so_luong_ton", nullable = false)
     private Integer soLuongTon;

@@ -27,7 +27,7 @@ public class MasterController {
     private AccountRepository accountRepository;
 
     @Autowired
-    private MathHangRepository mathHangRepository;
+    private MatHangRepository matHangRepository;
 
     @Autowired
     private YeuCauDatHangRepository yeuCauDatHangRepository;
@@ -79,25 +79,25 @@ public class MasterController {
     // 2. PHÂN HỆ QUẢN LÝ VẬT TƯ (Sales Dept - UC01)
     // ==========================================
     @GetMapping("/items")
-    public ResponseEntity<List<MathHang>> getAllItems() {
-        return ResponseEntity.ok(mathHangRepository.findAll());
+    public ResponseEntity<List<MatHang>> getAllItems() {
+        return ResponseEntity.ok(matHangRepository.findAll());
     }
 
     @PostMapping("/items")
-    public ResponseEntity<?> createItem(@RequestBody MathHang mathHang) {
-        log.info("[API SKU] Khai báo vật tư mới SKU: {}", mathHang.getMaHang());
-        if (mathHangRepository.existsById(mathHang.getMaHang())) {
+    public ResponseEntity<?> createItem(@RequestBody MatHang matHang) {
+        log.info("[API SKU] Khai báo vật tư mới SKU: {}", matHang.getMaHang());
+        if (matHangRepository.existsById(matHang.getMaHang())) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(Map.of("message", "Mã SKU này đã tồn tại trên hệ thống!"));
         }
-        MathHang saved = mathHangRepository.save(mathHang);
+        MatHang saved = matHangRepository.save(matHang);
         
         // Khởi tạo tồn kho mặc định = 0 tại tất cả các Site cho SKU mới này để tránh lỗi NullPointer
         List<ImportSite> sites = importSiteRepository.findAll();
         for (ImportSite site : sites) {
             thongTinKhoRepository.save(ThongTinKho.builder()
                     .importSite(site)
-                    .mathHang(saved)
+                    .matHang(saved)
                     .soLuongTon(0)
                     .donViTinh(saved.getDonViTinh())
                     .build());
@@ -107,16 +107,16 @@ public class MasterController {
     }
 
     @PutMapping("/items/{maHang}")
-    public ResponseEntity<?> updateItem(@PathVariable String maHang, @RequestBody MathHang mathHangDetails) {
+    public ResponseEntity<?> updateItem(@PathVariable String maHang, @RequestBody MatHang matHangDetails) {
         log.info("[API SKU] Cập nhật thông tin SKU: {}", maHang);
-        return mathHangRepository.findById(maHang)
+        return matHangRepository.findById(maHang)
                 .map(item -> {
-                    item.setTenHang(mathHangDetails.getTenHang());
-                    item.setDonViTinh(mathHangDetails.getDonViTinh());
-                    item.setCategory(mathHangDetails.getCategory());
-                    item.setTrangThai(mathHangDetails.getTrangThai());
-                    item.setQuyCach(mathHangDetails.getQuyCach());
-                    MathHang updated = mathHangRepository.save(item);
+                    item.setTenHang(matHangDetails.getTenHang());
+                    item.setDonViTinh(matHangDetails.getDonViTinh());
+                    item.setCategory(matHangDetails.getCategory());
+                    item.setTrangThai(matHangDetails.getTrangThai());
+                    item.setQuyCach(matHangDetails.getQuyCach());
+                    MatHang updated = matHangRepository.save(item);
                     return ResponseEntity.ok(updated);
                 })
                 .orElse(ResponseEntity.notFound().build());
@@ -126,20 +126,20 @@ public class MasterController {
     @DeleteMapping("/items/{maHang}")
     public ResponseEntity<?> deleteItem(@PathVariable String maHang) {
         log.info("[API SKU] Yêu cầu xóa SKU: {}", maHang);
-        Optional<MathHang> itemOpt = mathHangRepository.findById(maHang);
+        Optional<MatHang> itemOpt = matHangRepository.findById(maHang);
         if (!itemOpt.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        MathHang item = itemOpt.get();
+        MatHang item = itemOpt.get();
         
         // Kiểm tra xem SKU có đang tồn tại trong phiếu yêu cầu hoặc đơn hàng PO nào không
-        boolean inRequests = chiTietYeuCauRepository.existsByMathHangMaHang(maHang);
-        boolean inPOs = chiTietDonDatHangRepository.existsByMathHangMaHang(maHang);
+        boolean inRequests = chiTietYeuCauRepository.existsByMatHangMaHang(maHang);
+        boolean inPOs = chiTietDonDatHangRepository.existsByMatHangMaHang(maHang);
         
         if (inRequests || inPOs) {
             // Nếu có đơn hàng/yêu cầu lịch sử, tự động đổi trạng thái sang "Ngừng kinh doanh" để bảo toàn lịch sử dữ liệu
             item.setTrangThai("Ngừng kinh doanh");
-            mathHangRepository.save(item);
+            matHangRepository.save(item);
             log.info("[API SKU] SKU {} đã có lịch sử giao dịch. Tự động chuyển trạng thái sang Ngừng kinh doanh.", maHang);
             return ResponseEntity.ok(Map.of(
                 "action", "UPDATE_STATUS",
@@ -148,10 +148,10 @@ public class MasterController {
         }
         
         // Xóa thông tin tồn kho tại các site đối tác trước
-        thongTinKhoRepository.deleteByMathHangMaHang(maHang);
+        thongTinKhoRepository.deleteByMatHangMaHang(maHang);
         
         // Xóa mặt hàng vật lý
-        mathHangRepository.deleteById(maHang);
+        matHangRepository.deleteById(maHang);
         log.info("[API SKU] Đã xóa vật lý thành công SKU: {}", maHang);
         return ResponseEntity.ok(Map.of(
             "action", "DELETE_PHYSICAL",
@@ -198,12 +198,12 @@ public class MasterController {
                 Integer soLuong = (Integer) itemMap.get("soLuong");
                 String ngayNhan = (String) itemMap.get("ngayNhanMongMuon"); // ISO format yyyy-MM-dd
 
-                MathHang mathHang = mathHangRepository.findById(maHang)
+                MatHang matHang = matHangRepository.findById(maHang)
                         .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy mặt hàng: " + maHang));
 
                 ChiTietYeuCau chiTiet = ChiTietYeuCau.builder()
                         .yeuCauDatHang(savedYeuCau)
-                        .mathHang(mathHang)
+                        .matHang(matHang)
                         .soLuong(soLuong)
                         .ngayNhanMongMuon(java.time.LocalDate.parse(ngayNhan))
                         .build();
@@ -239,14 +239,14 @@ public class MasterController {
         List<ChiTietYeuCau> chiTietList = chiTietYeuCauRepository.findByYeuCauDatHangMaYc(id);
         Set<String> maHangSet = new HashSet<>();
         for (ChiTietYeuCau ct : chiTietList) {
-            if (ct.getMathHang() != null) {
-                maHangSet.add(ct.getMathHang().getMaHang());
+            if (ct.getMatHang() != null) {
+                maHangSet.add(ct.getMatHang().getMaHang());
             }
         }
 
         Set<String> targetSites = new HashSet<>();
         for (String maHang : maHangSet) {
-            List<ThongTinKho> khoList = thongTinKhoRepository.findByMathHangMaHang(maHang);
+            List<ThongTinKho> khoList = thongTinKhoRepository.findByMatHangMaHang(maHang);
             for (ThongTinKho kho : khoList) {
                 if (kho.getImportSite() != null && kho.getSoLuongTon() > 0) {
                     targetSites.add(kho.getImportSite().getMaSite());
@@ -330,7 +330,6 @@ public class MasterController {
     // ==========================================
     @GetMapping("/receipts/pos")
     public ResponseEntity<List<DonDatHang>> getInboundPOs() {
-        // Chỉ lấy các đơn PO đang giao tới hoặc tất cả đơn PO để theo dõi
         return ResponseEntity.ok(donDatHangRepository.findAllByOrderByNgayDatDesc());
     }
 
@@ -345,8 +344,8 @@ public class MasterController {
             List<Map<String, Object>> itemsList = new ArrayList<>();
             for (ChiTietDonDatHang ct : details) {
                 Map<String, Object> map = new HashMap<>();
-                map.put("maHang", ct.getMathHang().getMaHang());
-                map.put("tenHang", ct.getMathHang().getTenHang());
+                map.put("maHang", ct.getMatHang().getMaHang());
+                map.put("tenHang", ct.getMatHang().getTenHang());
                 map.put("soLuongDat", ct.getSoLuongDat());
                 map.put("donViTinh", ct.getDonViTinh());
                 itemsList.add(map);
@@ -375,7 +374,6 @@ public class MasterController {
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         } catch (Exception e) {
-            // Bao gồm lỗi SystemIntegrationException từ Proxy
             log.error("[API Receipt] Gặp lỗi nghiêm trọng, transaction đã rollback.", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("message", e.getMessage() != null ? e.getMessage() : "Lỗi hệ thống bất thường!"));

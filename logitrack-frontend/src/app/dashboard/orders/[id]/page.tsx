@@ -73,12 +73,12 @@ export default function RequestDetailAndAllocation() {
     const template = allocationDetails.find(d => d.maHang === maHang);
     if (!template) {
       // Nếu không tìm thấy template mặc định, lấy từ chi tiết yêu cầu để tạo dòng nháp trắng
-      const requestItem = request?.chiTietYeuCaus?.find(ct => (ct.maHang || ct.mathHang?.maHang) === maHang);
+      const requestItem = request?.chiTietYeuCaus?.find(ct => (ct.maHang || ct.matHang?.maHang) === maHang);
       if (!requestItem) return;
       
       const newRow: AllocationDetail = {
         maHang: maHang,
-        tenHang: requestItem.mathHang?.tenHang || requestItem.maHang || maHang,
+        tenHang: requestItem.matHang?.tenHang || requestItem.maHang || maHang,
         soLuongYeuCau: requestItem.soLuong,
         maSite: '',
         tenSite: '',
@@ -243,10 +243,10 @@ export default function RequestDetailAndAllocation() {
             <span className="text-xs text-slate-400 font-bold uppercase block">Chi tiết mặt hàng yêu cầu</span>
             <div className="mt-2 space-y-1 bg-slate-50 p-3 rounded-xl border border-slate-100 max-h-32 overflow-y-auto">
               {request.chiTietYeuCaus?.map((ct) => {
-                const ctMaHang = ct.maHang || ct.mathHang?.maHang || '';
+                const ctMaHang = ct.maHang || ct.matHang?.maHang || '';
                 return (
                   <div key={ctMaHang} className="flex justify-between text-xs font-semibold text-slate-600">
-                    <span>{ct.mathHang?.tenHang || ctMaHang}</span>
+                    <span>{ct.matHang?.tenHang || ctMaHang}</span>
                     <span className="text-slate-800">Số lượng: {ct.soLuong} | Hạn: {new Date(ct.ngayNhanMongMuon).toLocaleDateString('vi-VN')}</span>
                   </div>
                 );
@@ -329,7 +329,7 @@ export default function RequestDetailAndAllocation() {
               </TableHeader>
               <TableBody>
                 {request.chiTietYeuCaus?.map((item) => {
-                  const itemMaHang = item.maHang || item.mathHang?.maHang || '';
+                  const itemMaHang = item.maHang || item.matHang?.maHang || '';
                   const skuRows = allocationDetails.filter(d => d.maHang === itemMaHang);
                   const allocatedSum = getAllocatedSumForSku(itemMaHang);
                   const isMatched = allocatedSum === item.soLuong;
@@ -341,7 +341,7 @@ export default function RequestDetailAndAllocation() {
                         <TableCell colSpan={7} className="pl-8 py-3.5">
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div className="flex items-center gap-2">
-                              <span className="font-extrabold text-slate-800 text-sm tracking-tight">{item.mathHang?.tenHang || itemMaHang}</span>
+                              <span className="font-extrabold text-slate-800 text-sm tracking-tight">{item.matHang?.tenHang || itemMaHang}</span>
                               <span className="text-[10px] bg-slate-200 text-slate-600 font-extrabold px-2.5 py-0.5 rounded-md uppercase tracking-wider">{itemMaHang}</span>
                             </div>
                             <div className="flex items-center gap-4 pr-4">

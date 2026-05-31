@@ -7,7 +7,7 @@ DROP TABLE IF EXISTS don_dat_hang CASCADE;
 DROP TABLE IF EXISTS thong_tin_kho CASCADE;
 DROP TABLE IF EXISTS chi_tiet_yeu_cau CASCADE;
 DROP TABLE IF EXISTS yeu_cau_dat_hang CASCADE;
-DROP TABLE IF EXISTS math_hang CASCADE;
+DROP TABLE IF EXISTS mat_hang CASCADE;
 DROP TABLE IF EXISTS import_site CASCADE;
 DROP TABLE IF EXISTS account CASCADE;
 
@@ -19,8 +19,8 @@ CREATE TABLE account (
     role VARCHAR(50) NOT NULL CHECK (role IN ('SALES', 'ORDER', 'INVENTORY'))
 );
 
--- 2. Table: math_hang (Item SKU Catalog)
-CREATE TABLE math_hang (
+-- 2. Table: mat_hang (Item SKU Catalog)
+CREATE TABLE mat_hang (
     ma_hang VARCHAR(100) PRIMARY KEY,
     ten_hang VARCHAR(255) NOT NULL,
     don_vi_tinh VARCHAR(50) NOT NULL CHECK (don_vi_tinh IN ('Chiếc', 'Hộp', 'Bộ', 'Khay', 'Kg')),
@@ -45,7 +45,7 @@ CREATE TABLE chi_tiet_yeu_cau (
     ngay_nhan_mong_muon DATE NOT NULL,
     PRIMARY KEY (ma_yc, ma_hang),
     FOREIGN KEY (ma_yc) REFERENCES yeu_cau_dat_hang(ma_yc) ON DELETE CASCADE,
-    FOREIGN KEY (ma_hang) REFERENCES math_hang(ma_hang) ON DELETE CASCADE
+    FOREIGN KEY (ma_hang) REFERENCES mat_hang(ma_hang) ON DELETE CASCADE
 );
 
 -- 5. Table: import_site (Overseas 공급 Site)
@@ -65,7 +65,7 @@ CREATE TABLE thong_tin_kho (
     don_vi_tinh VARCHAR(50) NOT NULL,
     PRIMARY KEY (ma_site, ma_hang),
     FOREIGN KEY (ma_site) REFERENCES import_site(ma_site) ON DELETE CASCADE,
-    FOREIGN KEY (ma_hang) REFERENCES math_hang(ma_hang) ON DELETE CASCADE
+    FOREIGN KEY (ma_hang) REFERENCES mat_hang(ma_hang) ON DELETE CASCADE
 );
 
 -- 7. Table: don_dat_hang (Purchase Order - PO)
@@ -86,7 +86,7 @@ CREATE TABLE chi_tiet_don_dat_hang (
     don_vi_tinh VARCHAR(50) NOT NULL,
     PRIMARY KEY (ma_po, ma_hang),
     FOREIGN KEY (ma_po) REFERENCES don_dat_hang(ma_po) ON DELETE CASCADE,
-    FOREIGN KEY (ma_hang) REFERENCES math_hang(ma_hang) ON DELETE CASCADE
+    FOREIGN KEY (ma_hang) REFERENCES mat_hang(ma_hang) ON DELETE CASCADE
 );
 
 -- 9. Table: ket_qua_kiem_nhan (Inventory Receipt Adjustment)

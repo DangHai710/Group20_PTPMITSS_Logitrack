@@ -22,7 +22,7 @@ public class ChiTietYeuCau {
     @Id
     @ManyToOne
     @JoinColumn(name = "ma_hang", nullable = false)
-    private MathHang mathHang;
+    private MatHang matHang;
 
     @Column(name = "so_luong", nullable = false)
     private Integer soLuong;

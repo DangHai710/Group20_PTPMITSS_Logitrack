@@ -12,7 +12,7 @@ export interface Account {
   role: 'SALES' | 'ORDER' | 'INVENTORY';
 }
 
-export interface MathHang {
+export interface MatHang {
   maHang: string; // SKU
   tenHang: string;
   donViTinh: 'Chiếc' | 'Hộp' | 'Bộ' | 'Khay' | 'Kg';
@@ -34,7 +34,7 @@ export interface ChiTietYeuCau {
   maHang: string;
   soLuong: number;
   ngayNhanMongMuon: string; // yyyy-MM-dd
-  mathHang?: MathHang;
+  matHang?: MatHang;
 }
 
 export interface ImportSite {
@@ -50,7 +50,7 @@ export interface ThongTinKho {
   soLuongTon: number;
   donViTinh: string;
   importSite?: ImportSite;
-  mathHang?: MathHang;
+  matHang?: MatHang;
 }
 
 export interface DonDatHang {
@@ -68,7 +68,7 @@ export interface ChiTietDonDatHang {
   maHang: string;
   soLuongDat: number;
   donViTinh: string;
-  mathHang?: MathHang;
+  matHang?: MatHang;
 }
 
 export interface KetQuaKiemNhan {

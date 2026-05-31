@@ -13,9 +13,9 @@ INSERT INTO account (email, password, role) VALUES
 ON CONFLICT (email) DO NOTHING;
 
 -- ==========================================
--- 2. SEED MATH_HANG (35 SKUs with trang_thai and quy_cach)
+-- 2. SEED MAT_HANG (35 SKUs with trang_thai and quy_cach)
 -- ==========================================
-INSERT INTO math_hang (ma_hang, ten_hang, don_vi_tinh, category, trang_thai, quy_cach) VALUES
+INSERT INTO mat_hang (ma_hang, ten_hang, don_vi_tinh, category, trang_thai, quy_cach) VALUES
 ('SKU-MON-001', 'Màn hình Dell UltraSharp 24 inch', 'Chiếc', 'Electronics', 'Đang kinh doanh', '1 chiếc/hộp'),
 ('SKU-MON-002', 'Màn hình LG Gaming UltraGear 27 inch', 'Chiếc', 'Electronics', 'Đang kinh doanh', '1 chiếc/hộp'),
 ('SKU-MON-003', 'Màn hình ASUS ProArt 27 inch 4K', 'Chiếc', 'Electronics', 'Đang kinh doanh', '1 chiếc/hộp'),

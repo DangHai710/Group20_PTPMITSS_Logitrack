@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ThongTinKhoRepository extends JpaRepository<ThongTinKho, ThongTinKhoId> {
-    List<ThongTinKho> findByMathHangMaHang(String maHang);
-    void deleteByMathHangMaHang(String maHang);
+    List<ThongTinKho> findByMatHangMaHang(String maHang);
+    void deleteByMatHangMaHang(String maHang);
 }

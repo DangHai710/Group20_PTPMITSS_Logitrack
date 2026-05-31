@@ -15,9 +15,11 @@ export default function POInboundList() {
   const [pos, setPos] = useState<DonDatHang[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
+    setRole(localStorage.getItem('userRole'));
     async function loadPOs() {
       try {
         const data = await apiService.getPOs();
@@ -49,8 +51,14 @@ export default function POInboundList() {
   return (
     <div className="space-y-6 animate-slide-in">
       <div>
-        <h2 className="text-xl font-bold tracking-tight text-slate-800">Đơn đặt hàng PO giao tới kho</h2>
-        <p className="text-sm text-slate-500 mt-1">Theo dõi các lô hàng nhập khẩu đang trên đường vận chuyển để chuẩn bị kiểm đếm và nhận hàng.</p>
+        <h2 className="text-xl font-bold tracking-tight text-slate-800">
+          {role === 'INVENTORY' ? 'Đơn đặt hàng PO giao tới kho' : 'Danh sách Đơn đặt hàng PO'}
+        </h2>
+        <p className="text-sm text-slate-500 mt-1">
+          {role === 'INVENTORY'
+            ? 'Theo dõi các lô hàng nhập khẩu đang trên đường vận chuyển để chuẩn bị kiểm đếm và nhận hàng.'
+            : 'Tra cứu thông tin trạng thái vận chuyển và thông tin đối tác của các đơn hàng PO ngoại nhập.'}
+        </p>
       </div>
 
       <Card className="border-slate-200/50 shadow-sm">
@@ -60,7 +68,7 @@ export default function POInboundList() {
             <Input
               id="search-po"
               type="text"
-              placeholder="Nhập mã vận đơn PO cần kiểm kho..."
+              placeholder="Nhập mã vận đơn PO..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               icon={
@@ -102,17 +110,31 @@ export default function POInboundList() {
                     </TableCell>
                     <TableCell className="pr-8 text-right">
                       {po.trangThaiPo === 'DANG_GIAO' ? (
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          onClick={() => router.push(`/dashboard/receipts/${po.maPo}`)}
-                          className="bg-indigo-950 hover:bg-slate-900 shadow-sm shadow-slate-950/20 font-bold"
-                        >
-                          Kiểm nhận hàng
-                          <svg className="h-3.5 w-3.5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
-                          </svg>
-                        </Button>
+                        role === 'INVENTORY' ? (
+                          <Button
+                            variant="primary"
+                            size="sm"
+                            onClick={() => router.push(`/dashboard/receipts/${po.maPo}`)}
+                            className="bg-indigo-950 hover:bg-slate-900 shadow-sm shadow-slate-950/20 font-bold"
+                          >
+                            Kiểm nhận hàng
+                            <svg className="h-3.5 w-3.5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
+                            </svg>
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => router.push(`/dashboard/receipts/${po.maPo}`)}
+                            className="font-bold border-blue-200 hover:bg-blue-50 text-blue-600 shadow-sm rounded-xl py-1.5 px-3"
+                          >
+                            Theo dõi đơn PO
+                            <svg className="h-3.5 w-3.5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
+                            </svg>
+                          </Button>
+                        )
                       ) : (
                         <Button
                           variant="secondary"
@@ -120,7 +142,7 @@ export default function POInboundList() {
                           onClick={() => router.push(`/dashboard/receipts/${po.maPo}`)}
                           className="font-bold"
                         >
-                          Xem đối soát
+                          {role === 'INVENTORY' ? 'Xem đối soát' : 'Xem chi tiết PO'}
                         </Button>
                       )}
                     </TableCell>

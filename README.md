@@ -66,7 +66,7 @@ PTPMITSS/
         │   ├── layout.tsx              <-- Bọc Google Font Outfit, ToastProvider toàn cục
         │   ├── globals.css             <-- Cấu hình Glassmorphism theme, Scrollbar, Custom animations
         │   ├── page.tsx                <-- Màn hình Đăng nhập & Xác thực vai trò
-        │   └── (dashboard)/
+        │   └── dashboard/
         │       ├── layout.tsx          <-- Sidebar Menu động phân quyền theo vai trò
         │       ├── page.tsx            <-- Inventory Dashboard tổng quan
         │       ├── inventory/
@@ -126,99 +126,172 @@ Giao diện người dùng sẽ sẵn sàng tại địa chỉ: `http://localhos
 
 | Bộ phận (Role) | Email tài khoản | Mật khẩu | Chức năng chính |
 | :--- | :--- | :--- | :--- |
-| **Sales Department** | `sales@logitrack.com` | `sales123` | Khai báo SKU (UC001), Lập phiếu yêu cầu mua hàng (UC002). |
-| **Overseas Order Dept** | `order@logitrack.com` | `order123` | Gửi truy vấn tồn kho (UC006), Phân bổ & Tách đơn PO (UC007). |
-| **Inventory Department** | `inventory@logitrack.com` | `inventory123` | Đối soát thực nhận nhập kho, Xử lý chênh lệch & Rollback (UC014). |
+| **Sales Department** | `sales@logitrack.com` | `sales123` | Khai báo SKU (UC001), Lập phiếu yêu cầu mua hàng (UC002), Theo dõi trạng thái yêu cầu đặt hàng (UC003), Theo dõi chuyến PO ở chế độ Chỉ đọc. |
+| **Overseas Order Dept** | `order@logitrack.com` | `order123` | Quản lý Site đối tác (UC004), Tiếp nhận yêu cầu mua hàng (UC005), Gửi truy vấn tồn kho (UC006), Phân bổ & Tách đơn PO (UC007), Phát hành đơn PO (UC008), Theo dõi chuyến PO ở chế độ Chỉ đọc. |
+| **Inventory Department** | `inventory@logitrack.com` | `inventory123` | Xem đơn PO đang giao (UC013), Đối soát thực nhận nhập kho, Xử lý chênh lệch & Rollback (UC014). |
 
 ---
 
-## 🚀 Kịch bản Nghiệp vụ & Hướng dẫn Thao tác Chi tiết (UC 1, 6, 7)
+## 🚀 Kịch bản Nghiệp vụ & Hướng dẫn Thao tác Chi tiết (10 Use Case Cốt lõi)
 
-Dưới đây là kịch bản kiểm thử nghiệp vụ chi tiết kèm hướng dẫn thao tác từng bước trên giao diện web của hệ thống:
+Dưới đây là cẩm nang kịch bản kiểm thử nghiệp vụ chi tiết kèm hướng dẫn thao tác từng bước trên giao diện web của hệ thống LogiTrack B2B:
 
 ### 1️⃣ Use Case 1 (UC001): Quản lý danh mục mặt hàng (Bộ phận Bán hàng)
 
+* **Tài khoản sử dụng:** `sales@logitrack.com` / `sales123` (Vai trò `SALES`)
 * **Ý nghĩa & Kịch bản nghiệp vụ:**
-  * Bộ phận bán hàng quản lý danh mục dữ liệu gốc SKU sản phẩm (CRUD). 
-  * Cung cấp các thông tin bắt buộc (Mã SKU, Tên, Đơn vị) và 2 thuộc tính mới bổ sung: **Quy cách đóng gói** (mô tả đóng gói vật lý) và **Trạng thái kinh doanh** (Đang kinh doanh / Ngừng kinh doanh).
-  * **Quy tắc bảo toàn dữ liệu lịch sử:** Nếu mặt hàng đã phát sinh giao dịch (nằm trong yêu cầu đặt hàng cũ hoặc đơn PO cũ), hệ thống sẽ **chặn xóa vật lý** khỏi database, thay vào đó tự động cập nhật trạng thái mặt hàng sang `"Ngừng kinh doanh"` để bảo toàn tính toàn vẹn dữ liệu.
-  * **Hỗ trợ điều hướng lướt xem phân trang:** Giao diện tích hợp thanh **Phân trang (Pagination)** hiển thị tối đa **10 dòng sản phẩm/trang** cùng khối thống kê **Tổng số lượng mặt hàng** lọc theo thời gian thực trên thanh tìm kiếm.
-
+  * Quản lý danh mục sản phẩm (SKU) bao gồm các thông tin bắt buộc: Mã SKU, Tên, Đơn vị tính, cùng 2 thuộc tính mới bổ sung: **Quy cách đóng gói** (bao bì vật lý) và **Trạng thái kinh doanh** (Đang kinh doanh / Ngừng kinh doanh).
+  * **Quy tắc bảo toàn dữ liệu lịch sử:** Nếu mặt hàng đã phát sinh giao dịch (nằm trong yêu cầu đặt hàng cũ hoặc đơn PO cũ), hệ thống sẽ **chặn xóa vật lý** khỏi database, tự động chuyển trạng thái sang `"Ngừng kinh doanh"` để bảo toàn tính toàn vẹn dữ liệu.
+  * **Hỗ trợ phân trang & widget đếm tổng:** Giao diện tích hợp thanh **Phân trang** hiển thị tối đa **10 dòng sản phẩm/trang** cùng khối thống kê **Tổng số lượng mặt hàng** lọc theo thời gian thực.
 * **Hướng dẫn thao tác chi tiết từng bước:**
-  1. **Đăng nhập:** Truy cập `http://localhost:3000`. Nhập Email `sales@logitrack.com` và Mật khẩu `sales123`. Bấm **Đăng nhập**. Giao diện sidebar bên trái sẽ tự động hiện menu dành riêng cho Sales.
-  2. **Trải nghiệm Phân trang & widget Tổng số lượng:**
-     * Bấm chọn menu **Danh mục Mặt hàng** (Giao diện `GUI-02`).
-     * **Quan sát:** Ở trên thanh bộ lọc tìm kiếm xuất hiện một Widget nhỏ gọn cực kỳ tinh tế ghi nhận: `Tổng số: [N] mặt hàng` (ví dụ: `Tổng số: 35 mặt hàng`). Số lượng này tự động tăng/giảm động khi bạn nhập từ khóa tìm kiếm.
-     * **Quan sát:** Ở phía dưới đáy bảng danh sách xuất hiện **Thanh phân trang (Pagination Control)** có các nút chuyển trang `<` `1` `2` `3` `4` `>` và dòng thống kê: `Hiển thị dòng 1 đến 10 trong tổng số 35 mặt hàng`. 
-     * Thử bấm nút số `2`, `3` hoặc nút `>` để chuyển trang mượt mà.
-  3. **Thêm mới SKU:**
-     * Click nút màu xanh **Khai báo Vật tư mới** (Giao diện `GUI-03`).
-     * Nhập Mã SKU (Bắt buộc bắt đầu bằng `"SKU-"`, ví dụ: `SKU-MON-009`).
-     * Chọn Đơn vị tính (ví dụ: `Chiếc`).
-     * Nhập Tên mặt hàng (ví dụ: `Bàn phím cơ không dây AKKO 3098`).
-     * Nhập **Quy cách đóng gói** (ví dụ: `1 chiếc/hộp`).
-     * Chọn **Trạng thái kinh doanh**: `Đang kinh doanh`.
-     * Chọn Danh mục: `Accessories`.
-     * **Quan sát:** Ở bên phải màn hình, khối **Live Preview Card** cao cấp màu tối sẽ tự động cập nhật diện mạo sản phẩm, hiển thị trực quan thông số Quy cách đóng gói và huy hiệu (Badge) `"Đang kinh doanh"` màu xanh lá cây theo thời gian thực (real-time) khi bạn đang gõ phím.
-     * Bấm **Khai báo sản phẩm** để gửi dữ liệu lên Backend. Hệ thống hiển thị Toast thành công và điều hướng về bảng danh sách mặt hàng. Bạn sẽ quan sát thấy widget **Tổng số mặt hàng** tăng lên 36.
-  4. **Chỉnh sửa thông tin:**
-     * Tìm dòng mặt hàng vừa tạo trên bảng. Bấm nút **Sửa**.
-     * Hộp thoại Modal sửa sẽ hiện lên ở giữa màn hình. Hãy thay đổi Quy cách đóng gói thành `1 chiếc/hộp - Bản 2026` và chọn Trạng thái kinh doanh là `Ngừng kinh doanh`.
-     * Bấm **Lưu thay đổi**. Bảng sẽ tự động cập nhật và hiển thị huy hiệu trạng thái màu đỏ bắt mắt.
-  5. **Kiểm thử logic xóa bảo toàn (Xóa mềm):**
-     * Tìm một mặt hàng mẫu đã có lịch sử giao dịch (ví dụ: `SKU-MON-001` - Màn hình LG UltraGear đã nằm trong đơn PO mẫu).
-     * Bấm nút **Xóa** ở cột cuối. Hệ thống hiển thị hộp thoại xác nhận. Bấm **Đồng ý xóa**.
-     * **Kết quả quan sát:** Do mặt hàng đã có dữ liệu PO lịch sử liên quan, Backend tự động chuyển trạng thái của SKU này sang `"Ngừng kinh doanh"` và trả về Toast thông báo: *"Mặt hàng này đã có lịch sử giao dịch! Hệ thống tự động chuyển trạng thái sang 'Ngừng kinh doanh' để bảo toàn dữ liệu lịch sử."* Bản ghi vẫn được giữ nguyên vẹn trên CSDL và cập nhật huy hiệu màu đỏ thay vì bị xóa vật lý!
+  1. **Đăng nhập:** Đăng nhập bằng tài khoản `sales@logitrack.com` / `sales123`.
+  2. **Trải nghiệm Phân trang & widget Tổng số lượng:** Bấm chọn menu **Danh mục Mặt hàng**. Ở trên thanh bộ lọc tìm kiếm xuất hiện Widget: `Tổng số: [N] mặt hàng` tự động cập nhật khi tìm kiếm. Ở phía dưới đáy bảng xuất hiện thanh phân trang có các nút `<` `1` `2` `3` `>` để chuyển trang mượt mà.
+  3. **Thêm mới SKU:** Click nút **Khai báo Vật tư mới**. Nhập Mã SKU (bắt đầu bằng `"SKU-"`, ví dụ: `SKU-MON-009`), Đơn vị tính, Tên mặt hàng, **Quy cách đóng gói** (ví dụ: `1 chiếc/hộp`), chọn **Trạng thái kinh doanh**: `Đang kinh doanh`. Khối **Live Preview Card** màu tối ở bên phải tự động hiển thị trực quan thông số theo thời gian thực. Bấm **Khai báo sản phẩm** để lưu.
+  4. **Chỉnh sửa thông tin:** Tìm dòng mặt hàng vừa tạo trên bảng. Bấm nút **Sửa** (Modal sửa hiện lên), thay đổi Quy cách hoặc Trạng thái, bấm **Lưu thay đổi**.
+  5. **Kiểm thử logic xóa bảo toàn (Xóa mềm):** Tìm mặt hàng mẫu đã có lịch sử giao dịch (ví dụ: `SKU-MON-001`). Bấm **Xóa** ở cột cuối. Xác nhận đồng ý.
+* **Các tình huống Thành công / Thất bại:**
+  * **Thành công (Khai báo/Sửa mới):** Dữ liệu được lưu trữ an toàn trong DB, Toast xanh lá xuất hiện, widget đếm tổng số tăng lên.
+  * **Thành công (Xóa mềm bảo toàn dữ liệu):** Đối với các mặt hàng đã có giao dịch lịch sử, hệ thống chặn xóa vật lý, tự động đổi trạng thái sang "Ngừng kinh doanh" (badge màu đỏ), bắn Toast thông báo giải thích.
+  * **Thất bại (Trùng SKU):** Khai báo mã SKU đã tồn tại trên hệ thống -> Backend ném lỗi trùng khóa chính, Toast lỗi màu đỏ xuất hiện.
+  * **Thất bại (Không đúng định dạng SKU):** Nhập mã SKU không bắt đầu bằng `"SKU-"` -> Hệ thống báo lỗi định dạng mã vật tư.
 
----
+### 2️⃣ Use Case 2 (UC002): Tạo yêu cầu nhập hàng (Bộ phận Bán hàng)
 
-### 2️⃣ Use Case 6 (UC006): Truy vấn thông tin tồn kho và vận chuyển (BP Đặt hàng quốc tế)
-
+* **Tài khoản sử dụng:** `sales@logitrack.com` / `sales123` (Vai trò `SALES`)
 * **Ý nghĩa & Kịch bản nghiệp vụ:**
-  * Trước khi tách đơn đặt hàng, BP Đặt hàng quốc tế phải thực hiện gửi thông điệp truy vấn thăm dò lượng tồn kho khả dụng thực tế của tất cả các SKU trong yêu cầu tại các Site cung ứng đối tác nước ngoài.
-  * Hệ thống tự động quét cơ sở dữ liệu, lọc ra danh sách các Site có kinh doanh ít nhất một mặt hàng, sinh thông điệp hỏi tồn kho, và cập nhật trạng thái yêu cầu sang `"Đang chờ Site phản hồi"`. Đây là điều kiện bắt buộc để mở khóa chức năng chạy thuật toán phân bổ.
-  * Nếu không tìm thấy Site đối tác nào cung cấp các mặt hàng đó, hệ thống sẽ báo lỗi và cập nhật trạng thái yêu cầu sang `"Không thể đáp ứng"`.
-
+  * Gom nhu cầu đặt mua sản phẩm từ kinh doanh thực tế để gửi yêu cầu đặt hàng về bộ phận Đặt hàng quốc tế. Yêu cầu có thể chứa một hoặc nhiều dòng sản phẩm (SKU, số lượng đặt, đơn vị, ngày nhận mong muốn).
 * **Hướng dẫn thao tác chi tiết từng bước:**
-  1. **Đăng nhập:** Đăng nhập bằng tài khoản Đặt hàng quốc tế: Email `order@logitrack.com` / Mật khẩu `order123`.
-  2. **Xem yêu cầu:** Chọn menu **Yêu cầu Đặt hàng** (Giao diện `GUI-06`). Bạn sẽ nhìn thấy danh sách các phiếu yêu cầu do Sales lập.
-  3. **Thao tác truy vấn:**
-     * Tìm một phiếu yêu cầu đang ở trạng thái **Chờ xử lý** (màu cam). Bấm nút **Xử lý phân bổ** ở cột cuối để vào màn hình chi tiết.
-     * Tại giao diện chi tiết, nút *"Kích hoạt phân bổ tối ưu"* lúc này đang bị khóa (Disabled) và hiển thị cảnh báo *"Vui lòng gửi truy vấn tồn kho tới các Site đối tác trước khi chạy thuật toán phân bổ!"*.
-     * Bạn bấm nút **Gửi truy vấn tồn kho** (Giao diện `GUI-07`).
-     * **Kết quả quan sát:** Hệ thống thực hiện quét tìm Site và gửi API truy vấn thành công. Trạng thái phiếu yêu cầu lập tức chuyển sang **Đang chờ Site phản hồi** (màu xanh dương). Đồng thời, hiển thị một **Pop-up blur-overlay premium** thông báo: *"Đã gửi phiếu truy vấn thành công tới [N] site đối tác. Hệ thống đã cập nhật kết quả tồn kho khả dụng!"*. Lúc này, nút chạy thuật toán phân bổ sẽ chính thức được mở khóa (Enabled).
+  1. Click chọn menu **Phiếu Yêu Cầu**.
+  2. Click nút **Tạo yêu cầu mới** ở góc trên bên phải. Hệ thống tự động sinh Mã phiếu nháp (ví dụ: `REQ-2026-XXXX`).
+  3. Tại bảng sản phẩm: chọn sản phẩm qua Dropdown, nhập số lượng cần (ví dụ: `15`), chọn **Ngày nhận hàng** bằng lịch picker (phải sau ngày hiện tại).
+  4. Để thêm nhiều dòng, click nút **THÊM DÒNG MẶT HÀNG MỚI** ở cuối bảng.
+  5. Để xóa dòng, click nút thùng rác màu đỏ.
+  6. Click nút **Gửi yêu cầu nhập hàng** để gửi dữ liệu lên Backend.
+* **Các tình huống Thành công / Thất bại:**
+  * **Thành công:** Phiếu yêu cầu tạo thành công ở trạng thái `CHO_XU_LY` (màu cam), tự động chuyển hướng về danh sách phiếu, Toast xanh lá xuất hiện.
+  * **Thất bại (Ngày nhận không hợp lệ):** Chọn ngày nhận mong muốn nhỏ hơn hoặc bằng ngày lập phiếu (ví dụ: nhỏ hơn 30/05/2026) -> Báo lỗi: *"Ngày nhận mong muốn phải sau ngày lập phiếu (hơn 30/05/2026)!"* và chặn lưu.
+  * **Thất bại (Số lượng âm hoặc bằng 0):** Nhập số lượng nhỏ hơn 1 -> Hệ thống tự động khống chế giá trị tối thiểu là 1.
+  * **Thất bại (Phiếu rỗng):** Bấm gửi khi không có dòng sản phẩm nào -> Toast cảnh báo *"Yêu cầu đặt hàng phải có ít nhất một dòng sản phẩm!"*.
 
----
+### 3️⃣ Use Case 3 (UC003): Theo dõi trạng thái yêu cầu đặt hàng (Bộ phận Bán hàng)
 
-### 3️⃣ Use Case 7 (UC007): Xử lý yêu cầu và Tách đơn hàng (BP Đặt hàng quốc tế)
-
+* **Tài khoản sử dụng:** `sales@logitrack.com` / `sales123` (Vai trò `SALES`)
 * **Ý nghĩa & Kịch bản nghiệp vụ:**
-  * Đây là trái tim giải thuật của hệ thống. Chạy thuật toán tối ưu phân bổ 1 phiếu yêu cầu gom nhu cầu thành các đơn đặt hàng PO xuất khẩu gửi đi các Site nước ngoài.
-  * **Quy tắc rẽ nhánh tối ưu của thuật toán:**
-    * **Ưu tiên 1 (Phương thức vận chuyển):** Lấy ngày hiện tại cộng với số ngày vận chuyển của Site. Ưu tiên đi đường tàu biển (`ship delivery` - chi phí siêu rẻ) trước nếu kịp ngày cần hàng mong muốn của Sales. Nếu trễ hạn, tự động chuyển sang thử đi đường hàng không (`air delivery` - chi phí cao). Nếu đi máy bay vẫn trễ hạn -> Loại bỏ đối tác đó khỏi danh sách khả thi cho SKU này.
-    * **Ưu tiên 2 (Tồn kho khả dụng):** Sắp xếp giảm dần các Site đối tác khả thi theo số lượng tồn kho khả dụng lớn nhất.
-    * **Ưu tiên 3 (Greedy gom hàng tối thiểu đối tác):** Gom tối đa số lượng cần từ Site có tồn kho lớn nhất, nếu còn thiếu mới gom tiếp sang Site tiếp theo để số lượng Site phải đặt hàng cho SKU đó là nhỏ nhất (giảm chi phí quản lý vận hành).
-  * **Chức năng Manual Override cao cấp:** Hỗ trợ nhân viên tự điều chỉnh phương án phân bổ bằng tay trên UI (đổi Site, đổi phương tiện vận chuyển qua Dropdown, nhập lại số lượng phân bổ) và hiển thị trạng thái lệch số lượng thời gian thực.
-  * **Bảo toàn giao dịch (Rollback):** Nếu tổng tồn kho của các Site không đủ đáp ứng, Backend ném lỗi và hủy bỏ toàn bộ tiến trình ghi database, tránh phát sinh PO rác.
-
+  * Theo dõi tiến trình của các phiếu yêu cầu do bộ phận mình tạo ra nhằm cập nhật kế hoạch bán hàng.
 * **Hướng dẫn thao tác chi tiết từng bước:**
-  1. **Kích hoạt thuật toán tự động:**
-     * Tại màn hình chi tiết yêu cầu sau khi đã gửi truy vấn ở Bước 2, bấm nút **Kích hoạt phân bổ tối ưu**.
-     * **Kết quả quan sát:** Màn hình sẽ hiển thị bảng đề xuất phân bổ cực kỳ trực quan. Ví dụ: Với SKU-MON-001 cần 50 cái, thuật toán đề xuất: tách mua 35 cái ở `SITE-JP-001` (đi tàu biển - 15 ngày) và 15 cái ở `SITE-SG-001` (đi máy bay - 3 ngày) để vừa kịp hạn giao vừa tối ưu chi phí!
-  2. **Thao tác Manual Override (Điều chỉnh thủ công):**
-     * Để thử cấu hình bằng tay: Tại dòng sản phẩm, bạn bấm vào Dropdown chọn Site khả thi khác (ví dụ: đổi từ `SITE-JP-001` sang `SITE-US-001`).
-     * Đổi phương tiện vận chuyển sang `air delivery`.
-     * Thay đổi số lượng thực đặt tại ô nhập liệu.
-     * **Quan sát:** Ở cột trạng thái bên phải, hệ thống sẽ tự động đối chiếu số lượng thực đặt với số lượng yêu cầu ban đầu. Nếu tổng số lượng nhập thủ công chưa khớp hoặc vượt quá tồn kho khả dụng của Site, hệ thống hiển thị Badge màu đỏ cảnh báo `"Lệch: [N]"` và khóa nút duyệt đơn. Khi bạn chỉnh sửa số lượng khớp hoàn toàn, Badge lập tức chuyển sang màu xanh lá cây `"Đã Khớp"` rất bắt mắt!
-  3. **Xác nhận & Phát hành đơn PO:**
-     * Khi đã hài lòng với phương án phân bổ, bạn bấm nút **Xác nhận & Sinh đơn PO**.
-     * **Kết quả quan sát:** Backend sẽ khởi chạy transaction đồng bộ: Tự động trừ tồn kho đối tác trên database, tạo ra các vận đơn đặt hàng PO gốc ở trạng thái `DANG_GIAO`, chuyển trạng thái yêu cầu đặt hàng sang `DA_XU_LY`. Hệ thống bắn Toast thành công rực rỡ và điều hướng về trang danh sách!
+  1. Click chọn menu **Phiếu Yêu Cầu**.
+  2. Sử dụng thanh Filter Tabs (`Tất cả`, `Chờ tiếp nhận`, `Đang chờ Site`, `Đã phân bổ`) để phân loại nhanh các phiếu.
+  3. Click nút **Chi tiết** tại một phiếu yêu cầu để xem thông tin chi tiết các mặt hàng, trạng thái xử lý phân bổ của phiếu ở chế độ chỉ đọc.
+* **Các tình huống Thành công / Thất bại:**
+  * **Thành công:** Danh sách phiếu hiển thị chính xác các trạng thái động tương ứng (`CHO_XU_LY`, `DANG_CHO_PHAN_HOI`, `DA_XU_LY`). Xem chi tiết phiếu hiển thị đúng đắn giao diện Read-only an toàn.
+
+### 4️⃣ Use Case 4 (UC004): Quản lý thông tin Site đối tác & Vận chuyển (BP Đặt hàng quốc tế)
+
+* **Tài khoản sử dụng:** `order@logitrack.com` / `order123` (Vai trò `ORDER`)
+* **Ý nghĩa & Kịch bản nghiệp vụ:**
+  * Tra cứu thông tin năng lực của các Site cung ứng nước ngoài bao gồm: danh mục các mặt hàng kinh doanh, số lượng tồn kho khả dụng tại từng Site, các phương thức vận chuyển khả thi (đường hàng không/tàu biển) và thời gian vận chuyển (lead-time).
+* **Hướng dẫn thao tác chi tiết từng bước:**
+  1. Thông tin này được tích hợp trực tiếp khi xem chi tiết hoặc phân bổ phiếu yêu cầu.
+  2. Truy cập **Phiếu Yêu Cầu** -> Chọn một phiếu đã gửi truy vấn hoặc đã phân bổ -> Bấm **Xử lý phân bổ** hoặc **Chi tiết**.
+  3. Hệ thống hiển thị rõ thông tin Site cung cấp (Seoul, Tokyo, Shenzhen, LA, Frankfurt), phương thức vận tải tương ứng (tàu biển/máy bay) cùng lead-time khả dụng của từng Site cho từng mặt hàng cụ thể.
+* **Các tình huống Thành công / Thất bại:**
+  * **Thành công:** Hiển thị trực quan dữ liệu cấu hình Site và Vận chuyển chuẩn xác từ DB.
+
+### 5️⃣ Use Case 5 (UC005): Tiếp nhận yêu cầu mua hàng (BP Đặt hàng quốc tế)
+
+* **Tài khoản sử dụng:** `order@logitrack.com` / `order123` (Vai trò `ORDER`)
+* **Ý nghĩa & Kịch bản nghiệp vụ:**
+  * Tiếp nhận tự động các phiếu yêu cầu đặt hàng mới ở trạng thái `CHO_XU_LY` từ bộ phận Bán hàng để chuẩn bị xử lý.
+* **Hướng dẫn thao tác chi tiết từng bước:**
+  1. Đăng nhập bằng tài khoản Đặt hàng quốc tế. Click menu **Phiếu Yêu Cầu**.
+  2. Nhìn thấy danh sách các phiếu yêu cầu với các nút tương tác động dành riêng cho bộ phận Đặt hàng.
+  3. Sử dụng Tab bộ lọc **Chờ tiếp nhận** để tìm các phiếu mới gửi từ Sales.
+* **Các tình huống Thành công / Thất bại:**
+  * **Thành công:** Phiếu hiển thị đầy đủ, chính xác thông tin ngày lập, người tạo kèm nút thao tác **Gửi truy vấn** màu xanh lá nổi bật.
+
+### 6️⃣ Use Case 6 (UC006): Truy vấn thông tin tồn kho và vận chuyển (BP Đặt hàng quốc tế)
+
+* **Tài khoản sử dụng:** `order@logitrack.com` / `order123` (Vai trò `ORDER`)
+* **Ý nghĩa & Kịch bản nghiệp vụ:**
+  * Thăm dò tồn kho khả dụng thực tế của toàn bộ các mặt hàng trong phiếu yêu cầu tại các Site đối tác nước ngoài để làm căn cứ chạy phân bổ tối ưu.
+* **Hướng dẫn thao tác chi tiết từng bước:**
+  1. Tại dòng phiếu trạng thái `CHO_XU_LY`, click nút **Gửi truy vấn** màu xanh lá.
+  2. **Quan sát:** Một hộp thoại **Pop-up blur-overlay premium** hiện lên thông báo: *"Đã gửi phiếu truy vấn thành công tới [N] site đối tác. Hệ thống đã cập nhật kết quả tồn kho khả dụng!"*.
+  3. Trạng thái phiếu yêu cầu tự động cập nhật sang **Đang chờ Site phản hồi** (màu xanh dương).
+* **Các tình huống Thành công / Thất bại:**
+  * **Thành công (Có hàng tồn kho - ví dụ test `REQ-2026-005`):** Tìm thấy tồn kho khả dụng tại các Site đối tác, cập nhật trạng thái phiếu thành công và mở khóa nút chạy thuật toán phân bổ tối ưu.
+  * **Thất bại (Hết sạch hàng trên toàn cầu - ví dụ test `REQ-2026-010`):** Đối với các sản phẩm được cấu hình tồn kho bằng 0 trên toàn cầu, khi bấm Gửi truy vấn -> Hệ thống báo lỗi và tự động chuyển trạng thái phiếu yêu cầu sang **Không thể đáp ứng** (màu đỏ) đồng thời khóa tiến trình phân bổ.
+
+### 7️⃣ Use Case 7 (UC007): Xử lý yêu cầu và Tách đơn hàng (BP Đặt hàng quốc tế)
+
+* **Tài khoản sử dụng:** `order@logitrack.com` / `order123` (Vai trò `ORDER`)
+* **Ý nghĩa & Kịch bản nghiệp vụ:**
+  * Trái tim giải thuật của hệ thống. Chạy thuật toán tự động đề xuất phân bổ tối ưu (Ưu tiên 1: Đi tàu biển giá rẻ trước nếu kịp hạn cần hàng; Ưu tiên 2: Chuyển sang máy bay nhanh nếu đi tàu bị trễ; Ưu tiên 3: Greedy gom hàng ở Site có tồn lớn nhất để giảm số lượng đối tác phải đặt hàng).
+  * Hỗ trợ chức năng **Manual Override (Điều chỉnh thủ công)** cho phép nhân viên tự đổi Site, đổi phương tiện vận tải hoặc sửa lại số lượng đặt, tự động đối chiếu chênh lệch và hiển thị kết quả so khớp.
+  * Nút **+ Tách Site** cho phép chia một dòng mặt hàng thành nhiều nguồn Site cung cấp khác nhau để đặt hàng cùng lúc.
+* **Hướng dẫn thao tác chi tiết từng bước:**
+  1. Tại dòng phiếu trạng thái `DANG_CHO_PHAN_HOI`, click nút **Xử lý phân bổ**.
+  2. Bấm nút **Kích hoạt phân bổ tối ưu** để hệ thống chạy thuật toán tự động đề xuất.
+  3. Để điều chỉnh thủ công: click vào Dropdown **Chọn Site đối tác** hoặc **Phương thức vận tải** để thay đổi, hoặc nhập trực tiếp số lượng đặt tại ô nhập liệu.
+  4. Để tách site: Click nút **+ Tách Site**, hệ thống sẽ sinh ra một dòng phụ tương ứng để bạn tùy ý cấu hình phân bổ thêm.
+  5. Quan sát cột kết quả so khớp bên phải: Nếu tổng số lượng thực đặt chưa khớp với số lượng yêu cầu ban đầu, hệ thống hiện Badge màu đỏ `"Lệch: [N]"` và khóa nút sinh đơn PO. Khi bạn chỉnh sửa khớp hoàn toàn, Badge chuyển sang màu xanh lá `"Đã Khớp"` và mở khóa nút sinh đơn PO.
+* **Các tình huống Thành công / Thất bại:**
+  * **Thành công:** Thuật toán phân bổ tự động đề xuất chuẩn xác (ưu tiên tàu biển rẻ trước, đi máy bay khi khẩn cấp). Giao diện Manual Override cập nhật tức thì, hiển thị khớp số lượng màu xanh bắt mắt.
+  * **Thất bại (Thiếu hàng toàn cầu - ví dụ test `REQ-2026-020`):** Tổng nhu cầu lớn hơn tổng tồn kho khả dụng toàn cầu -> Hiện popup thông báo lỗi đỏ từ Backend và chặn sinh đơn PO.
+  * **Thất bại (Trễ hạn cả 2 phương thức - ví dụ test `REQ-2026-022`):** Ngày cần hàng quá khẩn cấp mà lead-time vận tải nhanh nhất bằng máy bay cũng không đáp ứng kịp -> Hệ thống báo lỗi trễ hạn vận tải.
+
+### 8️⃣ Use Case 8 (UC008): Gửi đơn hàng PO (BP Đặt hàng quốc tế)
+
+* **Tài khoản sử dụng:** `order@logitrack.com` / `order123` (Vai trò `ORDER`)
+* **Ý nghĩa & Kịch bản nghiệp vụ:**
+  * Sau khi chốt phương án phân bổ tối ưu (tất cả các dòng sản phẩm đều đạt trạng thái `"Đã Khớp"`), thực hiện phát hành các đơn đặt hàng PO xuất khẩu gửi đi các Site nước ngoài.
+* **Hướng dẫn thao tác chi tiết từng bước:**
+  1. Tại chân trang phân bổ tối ưu `/dashboard/orders/[id]`.
+  2. Click nút **Xác nhận & Sinh đơn PO** ở góc dưới cùng bên phải.
+  3. Hệ thống chạy transaction ghi nhận đơn PO, tự động trừ tồn kho đối tác trên DB, chuyển trạng thái phiếu yêu cầu và trả về trang danh sách.
+* **Các tình huống Thành công / Thất bại:**
+  * **Thành công:** Tạo thành công các đơn PO mới ở trạng thái `DANG_GIAO`, tồn kho đối tác bị trừ chuẩn xác trên DB, phiếu yêu cầu chuyển sang `DA_XU_LY` (màu xanh lá), hiển thị Toast xanh lá thành công.
+  * **Thất bại (Transaction Rollback):** Nếu xảy ra sự cố đột ngột khi ghi PO -> Toàn bộ transaction bị rollback, DB bảo toàn nguyên trạng, Toast lỗi màu đỏ hiện lên.
+
+### 9️⃣ Use Case 13 (UC013): Xem danh sách đơn hàng PO đang giao (BP Quản lý Kho)
+
+* **Tài khoản sử dụng:** `inventory@logitrack.com` / `inventory123` (Vai trò `INVENTORY`) hoặc `SALES`, `ORDER` ở chế độ Chỉ đọc (Read-only).
+* **Ý nghĩa & Kịch bản nghiệp vụ:**
+  * Theo dõi các đơn hàng PO đang trên đường vận chuyển về kho nội bộ để chủ động chuẩn bị nhân lực, mặt bằng bãi chứa tiếp nhận hàng hóa.
+  * Cho phép Sales và Order truy cập menu PO này dưới chế độ **Chỉ đọc (Read-only)** để theo dõi lộ trình chuyến hàng an toàn.
+* **Hướng dẫn thao tác chi tiết từng bước:**
+  1. Đăng nhập bằng tài khoản thủ kho `inventory@logitrack.com` / `inventory123` (hoặc tài khoản Sales/Order).
+  2. Click menu **Kiểm Nhận Nhập Kho** (Sidebar menu động hiển thị tiêu đề *"Theo dõi đơn hàng PO"* đối với Sales/Order).
+  3. Sử dụng ô tìm kiếm ở trên để nhập mã đơn PO cần tra cứu.
+  4. Click nút **Kiểm nhận hàng** màu xanh đậm (đối với thủ kho) hoặc nút **Theo dõi đơn PO** (đối với Sales/Order) để vào chi tiết.
+* **Các tình huống Thành công / Thất bại:**
+  * **Thành công:** Danh sách đơn PO hiển thị đầy đủ, chính xác theo thời gian thực.
+  * **Thất bại:** Nhập từ khóa tìm kiếm không tồn tại -> Hiện bảng trống *"Không tìm thấy đơn đặt hàng PO nào!"*.
+
+### 🔟 Use Case 14 (UC014): Đối chiếu và Ghi nhận nhập kho (BP Quản lý Kho)
+
+* **Tài khoản sử dụng:** `inventory@logitrack.com` / `inventory123` (Vai trò `INVENTORY`)
+* **Ý nghĩa & Kịch bản nghiệp vụ:**
+  * Đối soát số lượng hàng hóa thực nhận tại cửa kho với vận đơn PO gốc. Ghi nhận tăng tồn kho nội bộ và đồng bộ dữ liệu sang hệ thống kho ngoài của đối tác.
+  * **Bắt buộc giải trình chênh lệch:** Nếu phát hiện thiếu hụt, sai mặt hàng hoặc hàng lỗi hỏng, thủ kho bắt buộc phải điền thông tin giải trình vào ô ghi chú chênh lệch trước khi hoàn tất.
+  * **Transaction Rollback an toàn (Đã tích hợp Proxy):** Nếu quá trình đồng bộ kho ngoài bị lỗi mạng đột ngột, toàn bộ tiến trình ghi nhận kho nội bộ sẽ được Rollback hoàn toàn về trạng thái cũ, đảm bảo tính toàn vẹn dữ liệu.
+* **Hướng dẫn thao tác chi tiết từng bước:**
+  1. Tại trang chi tiết đối soát PO, đếm số lượng hàng hóa thực tế và nhập vào ô **Số lượng thực nhận** (mặc định khớp 100%).
+  2. Nếu có chênh lệch (ví dụ: Số lượng đặt 50 nhưng thực nhận chỉ 45) -> Hệ thống tự động chuyển kết quả kiểm nhận sang `"Thiếu hàng"`. Có thể đổi kết quả qua Dropdown kiểm nhận (Đủ hàng, Thiếu hàng, Sai hàng, Hàng lỗi).
+  3. Bắt buộc nhập lý do giải trình vào ô **Ghi chú chênh lệch**.
+  4. Click nút **Xác nhận nhập kho** để hoàn tất.
+  5. **Cách kiểm thử Transaction Rollback (Mô phỏng lỗi):** Nhập từ khóa `"sập mạng"` hoặc `"trigger_error"` vào ô Ghi chú chênh lệch rồi click Xác nhận -> Backend giả lập lỗi mạng khi gọi API kho ngoài, tiến trình ghi nhận kho bị Rollback hoàn toàn và bắn Toast lỗi màu đỏ. Trạng thái đơn PO vẫn được bảo toàn ở dạng `DANG_GIAO`.
+* **Các tình huống Thành công / Thất bại:**
+  * **Thành công (Khớp 100%):** Nhập kho thành công, trạng thái PO chuyển sang `DA_NHAP_KHO`, hệ thống kho nội bộ tăng tồn kho tương ứng.
+  * **Thành công (Có chênh lệch & Đã giải trình):** Nhập kho thành công, ghi nhận đúng số lượng thực tế nhận được vào DB và lưu lý do chênh lệch, trạng thái PO chuyển sang `DA_NHAP_KHO`.
+  * **Thất bại (Quên nhập ghi chú khi lệch số lượng):** Để lệch số lượng nhưng bỏ trống ô ghi chú giải trình -> Toast báo lỗi đỏ chặn lưu: *"Phát hiện có sự chênh lệch số lượng hàng hóa! Vui lòng nhập ghi chú giải trình chênh lệch trước khi xác nhận nhập kho."*
+  * **Thất bại (Transaction Rollback - Mô phỏng lỗi):** Nhập từ khóa `"sập mạng"` -> Hệ thống rollback hoàn toàn dữ liệu, bắn Toast lỗi màu đỏ, trạng thái đơn PO không bị đổi rác trên DB.
 
 ---
 
 ## 📊 Danh sách 25 Kịch bản Dữ liệu Kiểm thử Tích hợp (UC006 & UC007)
 
-Hệ thống đã được nạp sẵn bộ dữ liệu mẫu hạt giống khổng lồ gồm **25 kịch bản kiểm thử độc lập** (từ `REQ-2026-005` đến `REQ-2026-029`) được chèn sẵn vào CSDL qua `data.sql` để hai bạn và thầy cô dễ dàng kiểm nghiệm và đánh giá chất lượng phần mềm:
+Hệ thống đã được nạp sẵn bộ dữ liệu mẫu hạt giống khổng lồ gồm **25 kịch bản kiểm thử độc lập** (từ `REQ-2026-005` đến `REQ-2026-029`) được chèn sẵn vào CSDL qua `data.sql` để dễ dàng kiểm nghiệm và đánh giá chất lượng phần mềm:
 
 ### 1. Nhóm kiểm thử Use Case 6 (Truy vấn thông tin tồn kho và vận chuyển)
 *Các phiếu này mặc định ở trạng thái **`CHO_XU_LY`** (Màu cam - Chờ tiếp nhận) trong danh sách phiếu của bộ phận Đặt hàng.*
@@ -273,5 +346,3 @@ Khi click **`Gửi truy vấn`**, do không có site đối tác nào có tồn 
 * **Đã hoàn tất phân bổ & sinh đơn PO thành công (`DA_XU_LY`):** `REQ-2026-025`, `REQ-2026-026`, `REQ-2026-027` (đã liên kết chặt chẽ với các PO tương ứng trong CSDL).
 * **Không thể đáp ứng lịch sử (`KHONG_THE_DAP_UNG`):** `REQ-2026-028`.
 * **Đã chủ động hủy đơn bởi nhân viên (`DA_HUY`):** `REQ-2026-029`.
-
-

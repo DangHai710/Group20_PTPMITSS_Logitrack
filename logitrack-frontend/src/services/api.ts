@@ -3,7 +3,7 @@ import axios from 'axios';
 import { 
   LoginRequest, 
   Account, 
-  MathHang, 
+  MatHang, 
   YeuCauDatHang, 
   ImportSite, 
   DonDatHang,
@@ -28,18 +28,18 @@ export const apiService = {
   },
 
   // 2. Phân hệ Quản lý Vật tư (Sales)
-  getItems: async (): Promise<MathHang[]> => {
-    const response = await apiClient.get<MathHang[]>('/items');
+  getItems: async (): Promise<MatHang[]> => {
+    const response = await apiClient.get<MatHang[]>('/items');
     return response.data;
   },
 
-  createItem: async (item: MathHang): Promise<MathHang> => {
-    const response = await apiClient.post<MathHang>('/items', item);
+  createItem: async (item: MatHang): Promise<MatHang> => {
+    const response = await apiClient.post<MatHang>('/items', item);
     return response.data;
   },
 
-  updateItem: async (maHang: string, item: MathHang): Promise<MathHang> => {
-    const response = await apiClient.put<MathHang>(`/items/${maHang}`, item);
+  updateItem: async (maHang: string, item: MatHang): Promise<MatHang> => {
+    const response = await apiClient.put<MatHang>(`/items/${maHang}`, item);
     return response.data;
   },
 

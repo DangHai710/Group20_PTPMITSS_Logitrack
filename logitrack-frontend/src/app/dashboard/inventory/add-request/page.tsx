@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { useToast } from '@/components/ui/Toast';
-import { MathHang } from '@/types';
+import { MatHang } from '@/types';
 import apiService from '@/services/api';
 
 interface RequestItemLine {
@@ -18,7 +18,7 @@ interface RequestItemLine {
 }
 
 export default function AddRequest() {
-  const [itemsList, setItemsList] = useState<MathHang[]>([]);
+  const [itemsList, setItemsList] = useState<MatHang[]>([]);
   const [lines, setLines] = useState<RequestItemLine[]>([
     { maHang: '', soLuong: 1, ngayNhanMongMuon: '' }
   ]);

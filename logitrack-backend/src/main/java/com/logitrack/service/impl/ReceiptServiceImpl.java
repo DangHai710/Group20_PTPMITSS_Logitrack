@@ -52,7 +52,7 @@ public class ReceiptServiceImpl implements ReceiptService {
         List<ChiTietDonDatHang> chiTietList = chiTietDonDatHangRepository.findByDonDatHangMaPo(maPO);
         Map<String, ChiTietDonDatHang> mapChiTiet = new HashMap<>();
         for (ChiTietDonDatHang ct : chiTietList) {
-            mapChiTiet.put(ct.getMathHang().getMaHang(), ct);
+            mapChiTiet.put(ct.getMatHang().getMaHang(), ct);
         }
 
         boolean coChênhLệch = false;

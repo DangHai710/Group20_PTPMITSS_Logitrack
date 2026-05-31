@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface ChiTietDonDatHangRepository extends JpaRepository<ChiTietDonDatHang, ChiTietDonDatHangId> {
     List<ChiTietDonDatHang> findByDonDatHangMaPo(String maPo);
-    boolean existsByMathHangMaHang(String maHang);
+    boolean existsByMatHangMaHang(String maHang);
 }
