@@ -6,6 +6,7 @@ import com.logitrack.exception.AllocationException;
 import com.logitrack.repository.*;
 import com.logitrack.service.core.AllocationService;
 import com.logitrack.service.core.ReceiptService;
+import com.logitrack.service.core.MatHangService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,9 @@ public class MasterController {
 
     @Autowired
     private MatHangRepository matHangRepository;
+
+    @Autowired
+    private MatHangService matHangService;
 
     @Autowired
     private YeuCauDatHangRepository yeuCauDatHangRepository;
@@ -80,83 +84,39 @@ public class MasterController {
     // ==========================================
     @GetMapping("/items")
     public ResponseEntity<List<MatHang>> getAllItems() {
-        return ResponseEntity.ok(matHangRepository.findAll());
+        return ResponseEntity.ok(matHangService.getAllItems());
     }
 
     @PostMapping("/items")
     public ResponseEntity<?> createItem(@RequestBody MatHang matHang) {
-        log.info("[API SKU] Khai báo vật tư mới SKU: {}", matHang.getMaHang());
-        if (matHangRepository.existsById(matHang.getMaHang())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(Map.of("message", "Mã SKU này đã tồn tại trên hệ thống!"));
+        try {
+            MatHang saved = matHangService.createItem(matHang);
+            return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
-        MatHang saved = matHangRepository.save(matHang);
-        
-        // Khởi tạo tồn kho mặc định = 0 tại tất cả các Site cho SKU mới này để tránh lỗi NullPointer
-        List<ImportSite> sites = importSiteRepository.findAll();
-        for (ImportSite site : sites) {
-            thongTinKhoRepository.save(ThongTinKho.builder()
-                    .importSite(site)
-                    .matHang(saved)
-                    .soLuongTon(0)
-                    .donViTinh(saved.getDonViTinh())
-                    .build());
-        }
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @PutMapping("/items/{maHang}")
     public ResponseEntity<?> updateItem(@PathVariable String maHang, @RequestBody MatHang matHangDetails) {
-        log.info("[API SKU] Cập nhật thông tin SKU: {}", maHang);
-        return matHangRepository.findById(maHang)
-                .map(item -> {
-                    item.setTenHang(matHangDetails.getTenHang());
-                    item.setDonViTinh(matHangDetails.getDonViTinh());
-                    item.setCategory(matHangDetails.getCategory());
-                    item.setTrangThai(matHangDetails.getTrangThai());
-                    item.setQuyCach(matHangDetails.getQuyCach());
-                    MatHang updated = matHangRepository.save(item);
-                    return ResponseEntity.ok(updated);
-                })
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @org.springframework.transaction.annotation.Transactional
-    @DeleteMapping("/items/{maHang}")
-    public ResponseEntity<?> deleteItem(@PathVariable String maHang) {
-        log.info("[API SKU] Yêu cầu xóa SKU: {}", maHang);
-        Optional<MatHang> itemOpt = matHangRepository.findById(maHang);
-        if (!itemOpt.isPresent()) {
+        try {
+            MatHang updated = matHangService.updateItem(maHang, matHangDetails);
+            return ResponseEntity.ok(updated);
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
-        MatHang item = itemOpt.get();
-        
-        // Kiểm tra xem SKU có đang tồn tại trong phiếu yêu cầu hoặc đơn hàng PO nào không
-        boolean inRequests = chiTietYeuCauRepository.existsByMatHangMaHang(maHang);
-        boolean inPOs = chiTietDonDatHangRepository.existsByMatHangMaHang(maHang);
-        
-        if (inRequests || inPOs) {
-            // Nếu có đơn hàng/yêu cầu lịch sử, tự động đổi trạng thái sang "Ngừng kinh doanh" để bảo toàn lịch sử dữ liệu
-            item.setTrangThai("Ngừng kinh doanh");
-            matHangRepository.save(item);
-            log.info("[API SKU] SKU {} đã có lịch sử giao dịch. Tự động chuyển trạng thái sang Ngừng kinh doanh.", maHang);
-            return ResponseEntity.ok(Map.of(
-                "action", "UPDATE_STATUS",
-                "message", "Mặt hàng này đã có lịch sử giao dịch! Hệ thống tự động chuyển trạng thái sang 'Ngừng kinh doanh' để bảo toàn dữ liệu lịch sử."
-            ));
+    }
+
+    @DeleteMapping("/items/{maHang}")
+    public ResponseEntity<?> deleteItem(@PathVariable String maHang) {
+        try {
+            Map<String, Object> result = matHangService.deleteItem(maHang);
+            return ResponseEntity.ok(result);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
         }
-        
-        // Xóa thông tin tồn kho tại các site đối tác trước
-        thongTinKhoRepository.deleteByMatHangMaHang(maHang);
-        
-        // Xóa mặt hàng vật lý
-        matHangRepository.deleteById(maHang);
-        log.info("[API SKU] Đã xóa vật lý thành công SKU: {}", maHang);
-        return ResponseEntity.ok(Map.of(
-            "action", "DELETE_PHYSICAL",
-            "message", "Đã xóa thành công mặt hàng khỏi hệ thống!"
-        ));
     }
 
     // ==========================================
@@ -222,7 +182,7 @@ public class MasterController {
     }
 
     // ==========================================
-    // 4. PHÂN HỆ PHÂN BỔ TỐI ƯU (Order Dept - UC03 - Hải)
+    // 4. PHÂN HỆ PHÂN BỔ TỐI ƯU (Order Dept )
     // ==========================================
     @PostMapping("/orders/query-stock/{id}")
     public ResponseEntity<?> queryStock(@PathVariable String id) {
@@ -326,7 +286,7 @@ public class MasterController {
     }
 
     // ==========================================
-    // 6. PHÂN HỆ ĐỐI SOÁT & KIỂM NHẬN KHO (Inventory Dept - UC05 - Dương)
+    // 6. PHÂN HỆ ĐỐI SOÁT & KIỂM NHẬN KHO (Inventory Dept - UC05)
     // ==========================================
     @GetMapping("/receipts/pos")
     public ResponseEntity<List<DonDatHang>> getInboundPOs() {

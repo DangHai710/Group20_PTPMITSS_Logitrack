@@ -64,7 +64,7 @@ export default function DashboardOverview() {
           <p className="text-sm text-slate-500 mt-1">Dưới đây là thông số vận hành tổng quan của hệ thống LogiTrack hôm nay.</p>
         </div>
         <div className="text-sm font-semibold bg-blue-50 text-blue-600 px-4 py-2 rounded-xl border border-blue-100">
-          Ngày làm việc: 30/05/2026
+          Ngày làm việc: {new Date().toLocaleDateString('vi-VN')}
         </div>
       </div>
 
