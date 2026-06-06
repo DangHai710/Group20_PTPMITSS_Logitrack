@@ -153,8 +153,20 @@ public class AllocationServiceImpl implements AllocationService {
             // 5. Kiểm tra toàn vẹn số lượng nhập khẩu
             if (soLuongGomDuoc < soLuongYeuCau) {
                 log.error("[Thuật toán Hải] Mặt hàng {} không gom đủ số lượng. Cần: {}, Gom được: {}", maHang, soLuongYeuCau, soLuongGomDuoc);
-                throw new AllocationException("Không thể đạt được số lượng nhập khẩu như yêu cầu cho mặt hàng: " + tenHang + 
-                        " (Thiếu " + soLuongConThieu + " đơn vị)");
+                
+                int totalStock = thongTinKhoList.stream().mapToInt(ThongTinKho::getSoLuongTon).sum();
+                String reason;
+                if (totalStock < soLuongYeuCau) {
+                    reason = "Thiếu hàng tồn kho (Tổng tồn toàn cầu chỉ có " + totalStock + " < Yêu cầu " + soLuongYeuCau + " cho mặt hàng " + tenHang + ")";
+                } else {
+                    reason = "Chậm thời gian vận chuyển (Tồn toàn cầu có " + totalStock + " nhưng không có phương thức vận tải nào kịp ngày nhận mong muốn cho mặt hàng " + tenHang + ")";
+                }
+                
+                yeuCau.setTrangThai("KHONG_THE_DAP_UNG");
+                yeuCau.setLyDoKhongDapUng(reason);
+                yeuCauDatHangRepository.save(yeuCau);
+                
+                throw new AllocationException(reason);
             }
         }
 

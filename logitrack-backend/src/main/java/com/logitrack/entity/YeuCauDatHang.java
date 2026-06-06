@@ -25,6 +25,9 @@ public class YeuCauDatHang {
     @Column(name = "nguoi_tao", nullable = false)
     private String nguoiTao;
 
+    @Column(name = "ly_do_khong_dap_ung", length = 255)
+    private String lyDoKhongDapUng;
+
     @OneToMany(mappedBy = "yeuCauDatHang", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ChiTietYeuCau> chiTietYeuCaus;
 }

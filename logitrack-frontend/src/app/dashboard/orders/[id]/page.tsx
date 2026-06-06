@@ -62,7 +62,10 @@ export default function RequestDetailAndAllocation() {
       console.error(err);
       const errMsg = err.response?.data?.message || 'Không thể đạt được số lượng nhập khẩu như yêu cầu!';
       setErrorMessage(errMsg);
-      toast('Thuật toán phân bổ gặp sự cố hoặc đối tác không đủ tồn kho cung ứng!', 'error');
+      toast(errMsg, 'error');
+      setTimeout(() => {
+        router.push('/dashboard/orders');
+      }, 1500);
     } finally {
       setComputing(false);
     }
@@ -255,6 +258,25 @@ export default function RequestDetailAndAllocation() {
           </div>
         </CardContent>
       </Card>
+
+      {/* 1.5. Failure warning card when Cannot Fulfill */}
+      {request.trangThai === 'KHONG_THE_DAP_UNG' && (
+        <Card className="border-rose-200 shadow-md bg-rose-50/20">
+          <CardContent className="flex flex-col items-center justify-center p-8 text-center space-y-4">
+            <div className="h-14 w-14 rounded-2xl bg-rose-500 flex items-center justify-center text-white shadow-lg shadow-rose-500/20">
+              <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-lg font-bold text-rose-800">Yêu cầu không thể đáp ứng</h3>
+              <p className="text-sm font-semibold text-rose-600 max-w-xl leading-relaxed">
+                {request.lyDoKhongDapUng || "Không thể đạt được số lượng nhập khẩu như yêu cầu do thiếu tồn kho hoặc chậm thời gian vận chuyển."}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* 2. Core action Trigger Section */}
       {request.trangThai === 'DANG_CHO_PHAN_HOI' && role === 'ORDER' && (

@@ -26,6 +26,7 @@ export interface YeuCauDatHang {
   ngayTao: string; // ISO string
   trangThai: 'CHO_XU_LY' | 'DANG_CHO_PHAN_HOI' | 'CHO_PHAN_BO' | 'DA_XU_LY' | 'DA_HUY' | 'KHONG_THE_DAP_UNG';
   nguoiTao: string;
+  lyDoKhongDapUng?: string;
   chiTietYeuCaus?: ChiTietYeuCau[];
 }
 

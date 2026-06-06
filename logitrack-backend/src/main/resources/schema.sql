@@ -34,7 +34,8 @@ CREATE TABLE yeu_cau_dat_hang (
     ma_yc VARCHAR(100) PRIMARY KEY,
     ngay_tao TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     trang_thai VARCHAR(50) NOT NULL CHECK (trang_thai IN ('CHO_XU_LY', 'DANG_CHO_PHAN_HOI', 'KHONG_THE_DAP_UNG', 'DA_XU_LY', 'DA_HUY')),
-    nguoi_tao VARCHAR(255) NOT NULL
+    nguoi_tao VARCHAR(255) NOT NULL,
+    ly_do_khong_dap_ung VARCHAR(255)
 );
 
 -- 4. Table: chi_tiet_yeu_cau (Order Request Details)
