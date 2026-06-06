@@ -1,0 +1,35 @@
+{
+  "name": "logitrack-desktop",
+  "version": "1.0.0",
+  "description": "LogiTrack B2B Desktop Application",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build:backend": "cd ../logitrack-backend && mvn clean package -DskipTests",
+    "build:frontend": "cd ../logitrack-frontend && npm run build",
+    "dist": "electron-builder"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.logitrack.desktop",
+    "productName": "LogiTrackB2B",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "files": [
+      "main.js",
+      "bin/**/*",
+      "package.json"
+    ]
+  }
+}

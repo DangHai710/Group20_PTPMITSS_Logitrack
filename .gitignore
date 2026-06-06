@@ -52,3 +52,18 @@ logitrack-frontend/lerna-debug.log*
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# ==========================================
+# 3. Electron Desktop (.gitignore)
+# ==========================================
+logitrack-desktop/node_modules/
+logitrack-desktop/dist/
+logitrack-desktop/bin/*.jar
+logitrack-desktop/bin/*.exe
+
+# Root IDE & Log files
+.idea/
+.vscode/
+*.log
+*.tmp
+
